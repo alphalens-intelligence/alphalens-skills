@@ -20,9 +20,81 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
 
 - Start with the public OpenAPI when you need contract details.
 - Prefer narrow reads before writes.
-- For searches driven by free text, use the search planning endpoint first.
+- For searches driven by open-ended free text, use the search planning endpoint first.
+- If the user already provides a known company or domain, do not start with free-text planning. Resolve the company and use the similar organizations endpoint.
+- If the question is product-led, prefer product endpoints. Product search usually yields better precision than organization search for detailed categories, features, and use cases.
 - Similarity endpoints are ID-anchored; resolve the source entity before calling them.
 - Searches, reads, and enrichment can be credit- and policy-gated. Avoid repeated or unnecessary requests.
+
+## Which Endpoint Does What
+
+- `POST /api/v1/agent/search-params`
+  turns an open-ended prompt into a structured search plan
+- `GET /api/v1/entities/organizations/search-by-name/{organization_name}`
+  resolves a company name into candidate organizations
+- `GET /api/v1/entities/organizations/by-domain/{domain}`
+  resolves a known company domain into a specific organization
+- `GET /api/v1/search/organizations/{organization_id}/similar`
+  finds organizations similar to a known reference organization
+- `GET /api/v1/search/organizations/search`
+  performs free-text organization discovery by description
+- `GET /api/v1/search/organizations/search-customers`
+  performs organization discovery by customer-base description
+- `GET /api/v1/search/products/search`
+  performs free-text product discovery by product description
+- `GET /api/v1/search/products/search-customers`
+  performs product discovery by customer-base or target-user description
+- `GET /api/v1/search/products/{product_id}/similar`
+  finds products similar to a known reference product
+
+## Search Strategy
+
+### Use natural language planning when the market is unknown
+
+Good examples:
+
+- "Find vertical SaaS companies serving private equity firms"
+- "Find fintech infrastructure products for expense management teams"
+- "Find AI procurement startups in Europe founded after 2021"
+
+Recommended flow:
+
+1. Call `POST /api/v1/agent/search-params`
+2. Read `entity_type`, `search_method`, and normalized filters
+3. Call the matching search endpoint
+
+### Use direct similarity when the reference company is known
+
+Good examples:
+
+- "Find companies similar to Ramp"
+- "Show competitors to Brex"
+- "Find companies like Rippling"
+
+Recommended flow:
+
+1. Resolve the company by domain or name
+2. Call `GET /api/v1/search/organizations/{organization_id}/similar`
+
+Do not treat these as generic free-text market searches unless resolution fails.
+
+### Prefer product search for precise market mapping
+
+Product search is usually the better choice when the user is really asking about:
+
+- product categories
+- feature sets
+- workflows
+- target users
+- competitive products
+
+Examples:
+
+- "Find products similar to Gong for mid-market sales teams"
+- "Find AP automation products for finance teams"
+- "Find developer tools for LLM observability"
+
+If the end goal is still a company list, you can search products first and then roll results up to their organizations.
 
 ## Core Read Workflows
 
@@ -60,6 +132,8 @@ Useful endpoints:
 - `GET /api/v1/entities/organizations/{organization_id}`
 
 Use these when a user gives you a company name or domain and you need an `organization_id`.
+
+This is the preferred path for lookalike requests about a named company.
 
 ### 3. Resolve products or fetch product detail
 
@@ -135,6 +209,8 @@ When using pipelines:
 ## Heuristics
 
 - If the user asks "find companies like X", resolve `X` to an organization, then use the similar organizations endpoint.
+- If the user asks for a competitive landscape around a known company, use direct similarity before trying natural-language planning.
 - If the user asks "find products for this market", use search planning first, then the product search endpoints.
+- If the user's wording is product-led, prefer product search over organization search.
 - If the user asks for a target list with enrichment, inspect collections and pipelines before creating new ones.
 - If the user gives a domain, prefer by-domain resolution over fuzzy name matching.
