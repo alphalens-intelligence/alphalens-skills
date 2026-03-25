@@ -1,6 +1,14 @@
 ---
 name: alphalens-api
 description: Use the AlphaLens API for organization and product discovery and pipeline workflows. Use when the user wants to query AlphaLens data, find similar companies or products, build target lists, enrich pipeline items, or integrate against the AlphaLens API. Requires an AlphaLens subscription with API access.
+metadata:
+  {
+    "openclaw":
+      {
+        "primaryEnv": "ALPHALENS_API_KEY",
+        "homepage": "https://alphalens.ai"
+      }
+  }
 ---
 
 # AlphaLens API
