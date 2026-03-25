@@ -1,5 +1,7 @@
 # AlphaLens API Examples
 
+**Note:** This skill requires an active [AlphaLens subscription](https://alphalens.ai) with API access.
+
 ## Example Prompts
 
 - `Research the competitive landscape around zoominfo.com using AlphaLens.`
@@ -8,35 +10,22 @@
 - `Build a target list of AI procurement startups and enrich it in a pipeline.`
 - `Resolve Ramp by domain, find similar companies, and summarize the overlap.`
 
-## Natural-Language Search Examples
+## Organization Search Examples
 
-Use natural-language planning for open-ended market discovery prompts such as:
+Use free-text search for open-ended market discovery prompts:
 
 - `Find fintech infrastructure companies in the US founded after 2019.`
 - `Find AI procurement startups in Europe.`
 - `Find products for finance teams that automate AP workflows.`
 
-Start with:
-
 ```http
-POST /api/v1/agent/search-params
+GET /api/v1/search/organizations/search?description=fintech%20infrastructure&year_founded_min=2020&country_keys=US
 API-Key: <ALPHALENS_API_KEY>
-Content-Type: application/json
 ```
-
-```json
-{
-  "params": {
-    "prompt": "Find fintech infrastructure companies in the US founded after 2019"
-  }
-}
-```
-
-Then map the returned plan onto the matching organization or product search endpoint.
 
 ## Known-Company Similarity Example
 
-If the user already gives a known company, direct similarity is better than natural-language planning.
+If the user already gives a known company, direct similarity is the best approach.
 
 Example prompt:
 
@@ -57,8 +46,6 @@ API-Key: <ALPHALENS_API_KEY>
 GET /api/v1/search/organizations/123/similar
 API-Key: <ALPHALENS_API_KEY>
 ```
-
-Do not start with `POST /api/v1/agent/search-params` for this kind of request unless you cannot resolve the company.
 
 ## Product-Led Search Example
 
@@ -120,13 +107,6 @@ All search endpoints (`/api/v1/search/organizations/search`, `/api/v1/search/org
 | `skip` | integer | Starting offset for pagination (default: 0) |
 | `limit` | integer | Number of records to return. Maximum page size is 100 (default: 24) |
 
-## Example Organization Search Request
-
-```http
-GET /api/v1/search/organizations/search?description=fintech%20infrastructure&year_founded_min=2020&country_keys=US
-API-Key: <ALPHALENS_API_KEY>
-```
-
 ## Example Similar Organization Flow
 
 1. Resolve the source company:
@@ -145,14 +125,7 @@ API-Key: <ALPHALENS_API_KEY>
 
 ## Example Pipeline Flow
 
-1. Inspect current collections:
-
-```http
-GET /api/v1/collections
-API-Key: <ALPHALENS_API_KEY>
-```
-
-2. Add an organization to a pipeline:
+1. Add an organization to a pipeline:
 
 ```http
 POST /api/v1/pipelines/42/organizations
@@ -166,14 +139,14 @@ Content-Type: application/json
 }
 ```
 
-3. Poll readiness:
+2. Poll readiness:
 
 ```http
 GET /api/v1/pipelines/42/items/999/status
 API-Key: <ALPHALENS_API_KEY>
 ```
 
-4. Read final values:
+3. Read final values:
 
 ```http
 GET /api/v1/pipelines/42/items/999/values

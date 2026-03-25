@@ -1,5 +1,7 @@
 # AlphaLens API Reference
 
+**Note:** This skill requires an active [AlphaLens subscription](https://alphalens.ai) with API access.
+
 ## Authentication
 
 Default to API key authentication:
@@ -20,20 +22,19 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
 
 - Start with the public OpenAPI when you need contract details.
 - Prefer narrow reads before writes.
-- For searches driven by open-ended free text, use the search planning endpoint first.
-- If the user already provides a known company or domain, do not start with free-text planning. Resolve the company and use the similar organizations endpoint.
+- If the user already provides a known company or domain, resolve the company and use the similar organizations endpoint.
 - If the question is product-led, prefer product endpoints. Product search usually yields better precision than organization search for detailed categories, features, and use cases.
 - Similarity endpoints are ID-anchored; resolve the source entity before calling them.
 - Searches, reads, and enrichment can be credit- and policy-gated. Avoid repeated or unnecessary requests.
 
 ## Which Endpoint Does What
 
-- `POST /api/v1/agent/search-params`
-  turns an open-ended prompt into a structured search plan
 - `GET /api/v1/entities/organizations/search-by-name/{organization_name}`
   resolves a company name into candidate organizations
 - `GET /api/v1/entities/organizations/by-domain/{domain}`
   resolves a known company domain into a specific organization
+- `GET /api/v1/entities/organizations/{organization_id}`
+  fetches full organization details
 - `GET /api/v1/search/organizations/{organization_id}/similar`
   finds organizations similar to a known reference organization
 - `GET /api/v1/search/organizations/search`
@@ -46,22 +47,16 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
   performs product discovery by customer-base or target-user description
 - `GET /api/v1/search/products/{product_id}/similar`
   finds products similar to a known reference product
+- `GET /api/v1/pipelines/{pipeline_id}/organizations`
+  adds an organization to a pipeline
+- `GET /api/v1/pipelines/{pipeline_id}/items`
+  lists pipeline items with values
+- `GET /api/v1/pipelines/{pipeline_id}/items/{pipeline_item_id}/status`
+  checks if pipeline item values are ready
+- `GET /api/v1/pipelines/{pipeline_id}/items/{pipeline_item_id}/values`
+  reads final pipeline item values
 
 ## Search Strategy
-
-### Use natural language planning when the market is unknown
-
-Good examples:
-
-- "Find vertical SaaS companies serving private equity firms"
-- "Find fintech infrastructure products for expense management teams"
-- "Find AI procurement startups in Europe founded after 2021"
-
-Recommended flow:
-
-1. Call `POST /api/v1/agent/search-params`
-2. Read `entity_type`, `search_method`, and normalized filters
-3. Call the matching search endpoint
 
 ### Use direct similarity when the reference company is known
 
@@ -75,8 +70,6 @@ Recommended flow:
 
 1. Resolve the company by domain or name
 2. Call `GET /api/v1/search/organizations/{organization_id}/similar`
-
-Do not treat these as generic free-text market searches unless resolution fails.
 
 ### Prefer product search for precise market mapping
 
@@ -98,32 +91,7 @@ If the end goal is still a company list, you can search products first and then 
 
 ## Core Read Workflows
 
-### 1. Turn a natural-language prompt into a search plan
-
-Use:
-
-`POST /api/v1/agent/search-params`
-
-Request body:
-
-```json
-{
-  "params": {
-    "prompt": "Find vertical SaaS companies serving private equity firms"
-  }
-}
-```
-
-The response tells you:
-
-- `entity_type`: `organization` or `product`
-- `search_method`: `description`, `customer_base`, or `similar`
-- `search_query`
-- normalized filters
-
-Map the result into a concrete search endpoint instead of guessing.
-
-### 2. Resolve organizations before ID-anchored searches
+### 1. Resolve organizations before ID-anchored searches
 
 Useful endpoints:
 
@@ -133,9 +101,7 @@ Useful endpoints:
 
 Use these when a user gives you a company name or domain and you need an `organization_id`.
 
-This is the preferred path for lookalike requests about a named company.
-
-### 3. Resolve products or fetch product detail
+### 2. Resolve products or fetch product detail
 
 Useful endpoints:
 
@@ -170,49 +136,44 @@ All search endpoints support filters for location, company age/size, product cat
 - Similar products:
   `GET /api/v1/search/products/{product_id}/similar`
 
-## Collections And Pipeline Workflows
+## Pipeline Workflows
 
-Use these for list building, enrichment, and async-ish pipeline processing.
+Use pipelines for list building, enrichment, and async processing.
 
-### Safe mutation order
+### Add organizations to a pipeline
 
-1. Inspect existing collections first:
-   - `GET /api/v1/collections`
-2. Create a collection only if needed:
-   - `POST /api/v1/collections`
-3. Inspect available columns:
-   - `GET /api/v1/collections/columns/{collection_id}`
-4. Update configured columns if needed:
-   - `PATCH /api/v1/collections/columns/{collection_id}`
-5. Create custom question columns when enrichment logic is required:
-   - `POST /api/v1/custom-questions/`
-6. Add organizations to a pipeline:
-   - `POST /api/v1/pipelines/{pipeline_id}/organizations`
-7. Read pipeline progress and outputs:
-   - `GET /api/v1/pipelines/{pipeline_id}/items`
-   - `GET /api/v1/pipelines/{pipeline_id}/items/{pipeline_item_id}/status`
-   - `GET /api/v1/pipelines/{pipeline_id}/items/{pipeline_item_id}/values`
+1. Use `POST /api/v1/pipelines/{pipeline_id}/organizations` to add an organization:
 
-### Collection creation notes
+```http
+POST /api/v1/pipelines/{pipeline_id}/organizations
+API-Key: <ALPHALENS_API_KEY>
+Content-Type: application/json
 
-The API exposes `POST /api/v1/collections` for creating collections. Inspect the live OpenAPI for the current request schema before generating bodies.
+{
+  "organization_id": 123
+}
+```
 
-### Custom question notes
+### Read pipeline items
 
-The API exposes `POST /api/v1/custom-questions/` for computed columns. These can be plain LLM questions, tool-enabled questions, or formulas. Inspect the live schema before creating them.
+1. List pipeline items:
+   `GET /api/v1/pipelines/{pipeline_id}/items`
+
+2. Poll readiness:
+   `GET /api/v1/pipelines/{pipeline_id}/items/{pipeline_item_id}/status`
+
+3. Read values when ready:
+   `GET /api/v1/pipelines/{pipeline_id}/items/{pipeline_item_id}/values`
 
 ### Pipeline item readiness
 
-When using pipelines:
-
-- Do not assume item values are ready immediately after adding an organization or document.
+- Do not assume item values are ready immediately after adding an organization.
 - Poll the item status endpoint until `is_ready` is true before treating values as final.
 
 ## Heuristics
 
 - If the user asks "find companies like X", resolve `X` to an organization, then use the similar organizations endpoint.
-- If the user asks for a competitive landscape around a known company, use direct similarity before trying natural-language planning.
-- If the user asks "find products for this market", use search planning first, then the product search endpoints.
+- If the user asks for a competitive landscape around a known company, use direct similarity.
+- If the user asks "find products for this market", use the product search endpoints.
 - If the user's wording is product-led, prefer product search over organization search.
-- If the user asks for a target list with enrichment, inspect collections and pipelines before creating new ones.
 - If the user gives a domain, prefer by-domain resolution over fuzzy name matching.

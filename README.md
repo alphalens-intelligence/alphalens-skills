@@ -2,9 +2,11 @@
 
 Installable agent skills for AlphaLens.
 
+**Note:** These skills require an active [AlphaLens subscription](https://alphalens.ai) with API access. Contact sales@alphalens.ai for pricing.
+
 ## Available Skills
 
-- `alphalens-api`: Skill for using the AlphaLens API for search planning, organization and product discovery, collections, and pipeline workflows.
+- `alphalens-api`: Skill for using the AlphaLens API for organization and product discovery and pipeline workflows.
 
 ## Install
 
