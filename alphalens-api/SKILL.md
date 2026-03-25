@@ -5,6 +5,7 @@ metadata:
   {
     "openclaw":
       {
+        "requires": { "env": ["ALPHALENS_API_KEY"] },
         "primaryEnv": "ALPHALENS_API_KEY",
         "homepage": "https://alphalens.ai"
       }
