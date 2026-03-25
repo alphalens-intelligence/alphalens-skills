@@ -146,6 +146,8 @@ Use these when you need a product detail fetch or product list for a known compa
 
 ## Search Endpoints
 
+All search endpoints support filters for location, company age/size, product categories, and funding. See `EXAMPLES.md` for the full filter reference.
+
 ### Organization discovery
 
 - Description search:

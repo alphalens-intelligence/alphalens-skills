@@ -66,12 +66,12 @@ Product-level search usually performs better for precise category, feature, and 
 
 Example prompt:
 
-- `Find products similar to Gong for mid-market sales teams.`
+- `AI for retinal scanning to detect cancer`
 
 Recommended path:
 
 ```http
-GET /api/v1/search/products/search?description=sales%20conversation%20intelligence%20for%20mid-market%20sales%20teams
+GET /api/v1/search/products/search?description=AI%20for%20retinal%20scanning%20to%20detect%20cancer
 API-Key: <ALPHALENS_API_KEY>
 ```
 
@@ -82,21 +82,43 @@ GET /api/v1/search/products/123/similar
 API-Key: <ALPHALENS_API_KEY>
 ```
 
-## Example Search Planning Request
+## Search Filters
 
-```http
-POST /api/v1/agent/search-params
-API-Key: <ALPHALENS_API_KEY>
-Content-Type: application/json
-```
+All search endpoints (`/api/v1/search/organizations/search`, `/api/v1/search/organizations/search-customers`, `/api/v1/search/products/search`, `/api/v1/search/products/search-customers`, and similarity endpoints) support the following filters:
 
-```json
-{
-  "params": {
-    "prompt": "Find fintech infrastructure companies in the US founded after 2019"
-  }
-}
-```
+### Location Filters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `country_keys` | string[] | Country codes (ISO 3166-1 alpha-2). Example: `["US", "GB"]` |
+| `region_keys` | string[] | States/regions. Example: `["NEW_YORK-US", "CALIFORNIA-US"]` |
+| `is_headquarters` | boolean | Filter for headquarters locations only (default: true) |
+
+### Company Age & Size Filters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `year_founded_min` | integer | Minimum year founded |
+| `year_founded_max` | integer | Maximum year founded |
+| `employee_count_range_min` | integer | Minimum employee count |
+| `employee_count_range_max` | integer | Maximum employee count |
+
+### Product & Funding Filters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `product_categories` | enum[] | Filter by product categories: `goods`, `services`, `software`, `hardware` |
+| `latest_funding_round` | enum[] | Filter by funding stages: `pre_seed/angel`, `seed`, `series_a`, `series_b`, `series_c`, `series_d`, `series_e`, `series_f`, `series_g`, `series_h`, `series_i`, `series_j`, `series_other`, `convertible_note`, `corporate_round`, `debt_financing`, `crowdfunding`, `grant_equity`, `grant_other`, `post_ipo`, `private_equity`, `secondary_market`, `initial_coin_offering`, `other` |
+| `has_funding` | boolean | Filter by whether the entity has received any funding |
+| `raised_date_from` | date | Filter funding rounds raised on or after this date (ISO format: YYYY-MM-DD) |
+| `raised_date_to` | date | Filter funding rounds raised on or before this date (ISO format: YYYY-MM-DD) |
+
+### Pagination
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `skip` | integer | Starting offset for pagination (default: 0) |
+| `limit` | integer | Number of records to return. Maximum page size is 100 (default: 24) |
 
 ## Example Organization Search Request
 

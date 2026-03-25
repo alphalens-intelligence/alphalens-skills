@@ -87,5 +87,5 @@ description: Use the AlphaLens API for organization and product discovery, searc
 
 ## References
 
-- For endpoint mapping and workflow details, read [reference.md](reference.md).
-- For example prompts and request shapes, read [examples.md](examples.md).
+- For endpoint mapping and workflow details, see [references/REFERENCE.md](references/REFERENCE.md).
+- For example prompts and request shapes, see [references/EXAMPLES.md](references/EXAMPLES.md).

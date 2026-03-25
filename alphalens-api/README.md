@@ -5,8 +5,8 @@ This folder contains a publishable skill package for the AlphaLens API.
 ## Contents
 
 - `SKILL.md`: Main skill definition used by agent runtimes
-- `reference.md`: Endpoint mapping and workflow rules
-- `examples.md`: Example prompts and request shapes
+- `references/REFERENCE.md`: Endpoint mapping and workflow rules
+- `references/EXAMPLES.md`: Example prompts and request shapes
 
 ## Local Use
 
@@ -33,8 +33,9 @@ The safest layout for a dedicated skills repo is:
 your-skills-repo/
 └── alphalens-api/
     ├── SKILL.md
-    ├── reference.md
-    └── examples.md
+    └── references/
+        ├── REFERENCE.md
+        └── EXAMPLES.md
 ```
 
 ## Claude Code

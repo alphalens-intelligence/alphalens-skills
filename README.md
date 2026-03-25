@@ -25,15 +25,15 @@ npx skills add https://github.com/alphalens-intelligence/alphalens-skills
 ```text
 alphalens-skills/
 └── alphalens-api/
-    ├── SKILL.md
-    ├── reference.md
-    ├── examples.md
-    └── README.md
+    ├── SKILL.md           # Main agent-readable skill definition
+    ├── references/
+    │   ├── REFERENCE.md  # Endpoint mapping and workflow guidance
+    │   └── EXAMPLES.md   # Example prompts and request shapes
+    └── README.md         # Local installation and publishing notes
 ```
 
 ## Notes
 
 - `SKILL.md` is the main agent-readable skill definition.
-- `reference.md` contains endpoint mapping and workflow guidance.
-- `examples.md` contains example prompts and request shapes.
+- `references/` contains supplementary documentation loaded on demand.
 - `alphalens-api/README.md` explains local copying and publishing usage.
