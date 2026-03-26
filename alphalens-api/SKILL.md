@@ -37,6 +37,7 @@ metadata:
 - Product-level search usually performs better than organization-level search for precise market/category matching. Prefer product search when the user is asking about products, use cases, features, or competitive product landscapes.
 - Resolve company names or domains before ID-anchored similarity searches.
 - Be careful with policy-, quota-, and credit-gated endpoints. Avoid broad fan-out without a clear reason.
+- **Always set `is_headquarters=true` on organization and product search endpoints.** This filters to headquarters locations only and returns much better results. Only omit this filter if the user explicitly asks for all locations including branch offices.
 
 ## Choose The Right Search Path
 

@@ -71,7 +71,7 @@ API-Key: <ALPHALENS_API_KEY>
 
 ## Search Filters
 
-All search endpoints (`/api/v1/search/organizations/search`, `/api/v1/search/organizations/search-customers`, `/api/v1/search/products/search`, `/api/v1/search/products/search-customers`, and similarity endpoints) support the following filters:
+All search endpoints support the following filters:
 
 ### Location Filters
 
@@ -79,7 +79,7 @@ All search endpoints (`/api/v1/search/organizations/search`, `/api/v1/search/org
 |-----------|------|-------------|
 | `country_keys` | string[] | Country codes (ISO 3166-1 alpha-2). Example: `["US", "GB"]` |
 | `region_keys` | string[] | States/regions. Example: `["NEW_YORK-US", "CALIFORNIA-US"]` |
-| `is_headquarters` | boolean | Filter for headquarters locations only (default: true) |
+| `is_headquarters` | boolean | **Always set this to `true`** for better results. Filters to headquarters locations only and returns much higher quality matches. Only omit if the user explicitly asks for all locations including branch offices. |
 
 ### Company Age & Size Filters
 
