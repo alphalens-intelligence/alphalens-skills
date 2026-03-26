@@ -29,10 +29,25 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
 
 ## Which Endpoint Does What
 
+### Organization Resolution
 - `GET /api/v1/entities/organizations/by-domain/{domain}`
-  resolves a known company domain into a specific organization
+  resolves a known company domain into a specific organization (returns `organization_id`)
 - `GET /api/v1/entities/organizations/{organization_id}`
   fetches full organization details
+
+### Organization Enrichment (requires organization_id)
+- `GET /api/v1/entities/organizations/{organization_id}/products`
+  lists all products for the organization
+- `GET /api/v1/entities/organizations/{organization_id}/funding`
+  returns funding rounds and investor details
+- `GET /api/v1/entities/organizations/{organization_id}/growth-metrics`
+  returns headcount, web traffic, LinkedIn followers, job openings time series
+- `GET /api/v1/entities/organizations/{organization_id}/people`
+  returns founders and leadership
+- `GET /api/v1/entities/organizations/{organization_id}/addresses`
+  returns headquarters and branch office locations
+
+### Search
 - `GET /api/v1/search/organizations/{organization_id}/similar`
   finds organizations similar to a known reference organization
 - `GET /api/v1/search/organizations/search`
@@ -45,6 +60,8 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
   performs product discovery by customer-base or target-user description
 - `GET /api/v1/search/products/{product_id}/similar`
   finds products similar to a known reference product
+
+### Pipeline
 - `GET /api/v1/pipelines/{pipeline_id}/organizations`
   adds an organization to a pipeline
 - `GET /api/v1/pipelines/{pipeline_id}/items`
@@ -98,7 +115,17 @@ Useful endpoints:
 
 Use these when a user gives you a domain and you need an `organization_id`.
 
-### 2. Resolve products or fetch product detail
+### 2. Enrich organization data
+
+Once you have an `organization_id`, fetch additional data:
+
+- `GET /api/v1/entities/organizations/{organization_id}/products` - List the company's products
+- `GET /api/v1/entities/organizations/{organization_id}/funding` - Funding rounds and investors
+- `GET /api/v1/entities/organizations/{organization_id}/growth-metrics` - Headcount, web traffic, LinkedIn followers, job openings
+- `GET /api/v1/entities/organizations/{organization_id}/people` - Founders and leadership
+- `GET /api/v1/entities/organizations/{organization_id}/addresses` - HQ and branch locations
+
+### 3. Resolve products or fetch product detail
 
 Useful endpoints:
 

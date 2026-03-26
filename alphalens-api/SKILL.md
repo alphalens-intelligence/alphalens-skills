@@ -18,10 +18,8 @@ metadata:
 
 ## Authentication
 
-- Prefer API key auth.
 - Expect `ALPHALENS_API_KEY` to be available.
 - Send `API-Key: <value>` on requests.
-- Bearer auth also exists, but use API keys unless the user explicitly asks for bearer tokens.
 
 ## Base URLs
 
@@ -56,6 +54,16 @@ metadata:
 1. If the user gives a domain, call `GET /api/v1/entities/organizations/by-domain/{domain}`.
 2. Use the resolved `organization_id` with `GET /api/v1/search/organizations/{organization_id}/similar`.
 3. Use detail endpoints only for shortlisted results.
+
+### Enrich organization data
+
+Once you have an `organization_id`, you can fetch additional data:
+
+- `GET /api/v1/entities/organizations/{organization_id}/products` - List the company's products
+- `GET /api/v1/entities/organizations/{organization_id}/growth-metrics` - Get headcount, web traffic, LinkedIn followers, job openings
+- `GET /api/v1/entities/organizations/{organization_id}/funding` - Get funding rounds and investors
+- `GET /api/v1/entities/organizations/{organization_id}/people` - Get founders and leadership
+- `GET /api/v1/entities/organizations/{organization_id}/addresses` - Get locations (HQ and branches)
 
 ### Research products from a prompt
 
