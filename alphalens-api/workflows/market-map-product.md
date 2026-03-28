@@ -81,13 +81,13 @@ API="https://api-production.alphalens.ai"
 KEY="${ALPHALENS_API_KEY}"
 
 # Ring 1: product-level similarity for each selected product
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid1}/similar?limit=50" > /tmp/prod1.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid2}/similar?limit=50" > /tmp/prod2.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid3}/similar?limit=50" > /tmp/prod3.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid1}/similar?limit=50&is_headquarters=true" > /tmp/prod1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid2}/similar?limit=50&is_headquarters=true" > /tmp/prod2.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid3}/similar?limit=50&is_headquarters=true" > /tmp/prod3.json &
 
 # Ring 2: org-level similarity from anchor (offset 0 + offset 50)
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=0"  > /tmp/org0.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=50" > /tmp/org50.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=0&is_headquarters=true"  > /tmp/org0.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=50&is_headquarters=true" > /tmp/org50.json &
 
 # Ring 3: domain lookups for known players (your own knowledge, 20-40 domains)
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known1.com" > /tmp/d1.json &
@@ -95,8 +95,13 @@ curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known2.
 # ... all known domains in same block ...
 
 # Ring 4: second-ring org similarity (top 5-8 orgs from Ring 2, run their similarity)
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top1_id}/similar?limit=50" > /tmp/r2_1.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top2_id}/similar?limit=50" > /tmp/r2_2.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top1_id}/similar?limit=50&is_headquarters=true" > /tmp/r2_1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top2_id}/similar?limit=50&is_headquarters=true" > /tmp/r2_2.json &
+
+# Base64-encode each company favicon in the same block
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > /tmp/favicon_domain1.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > /tmp/favicon_domain2.txt &
+# ... one curl | base64 per company in the same block ...
 
 wait   # ← everything lands here
 ```
@@ -106,9 +111,9 @@ wait   # ← everything lands here
 | Ring | Method | What it uniquely surfaces |
 |---|---|---|
 | 1 — Product similarity | `/search/products/{id}/similar` | Niche product lines inside large orgs; companies that org-level misses because their org description is too broad |
-| 2 — Org similarity ring 1 | `/search/organizations/{id}/similar?limit=50` | Direct org-level competitors; the obvious players |
+| 2 — Org similarity ring 1 | `/search/organizations/{id}/similar?limit=50&is_headquarters=true` | Direct org-level competitors; the obvious players |
 | 3 — Known player sweep | `by-domain` for 20-40 domains you know | Established names that may be too large/small for similarity to surface (incumbents, emerging startups) |
-| 4 — Org similarity ring 2 | `/search/organizations/{ring1_id}/similar` | Niche players only reachable by pivoting through a ring-1 result; almost never in ring 1 directly |
+| 4 — Org similarity ring 2 | `/search/organizations/{ring1_id}/similar?limit=50&is_headquarters=true` | Niche players only reachable by pivoting through a ring-1 result; almost never in ring 1 directly |
 
 **Why product-level similarity is better than org-level for product maps:**
 - Returns `product_name`, `organization_name`, `active_domain`, and cosine distance **in one call** — no second lookup needed

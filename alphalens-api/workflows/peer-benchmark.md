@@ -12,7 +12,7 @@ Run the anchor's org similarity search with `limit=30` and filter for companies 
 - Are indexed (not pending) so growth data is available
 
 ```bash
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=30"
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=30&is_headquarters=true"
 ```
 
 ---
@@ -121,7 +121,7 @@ Base this on your training knowledge of each company plus the AlphaLens `organiz
 ## Step 7 — Company header cards
 
 One card per company at the top of the page showing:
-- Favicon logo + name + HQ city + founded year
+- Letter avatar (CSS-only, coloured by cluster) + name + HQ city + founded year
 - Current headcount (large, in cluster colour)
 - Total funding raised
 - Growth badge: `+176% since 2021-02` / `-52% since 2023-02` / `+3% since 2023-06`

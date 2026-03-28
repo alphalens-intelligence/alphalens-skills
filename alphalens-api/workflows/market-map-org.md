@@ -20,7 +20,7 @@ API="https://api-production.alphalens.ai"
 KEY="${ALPHALENS_API_KEY}"
 
 # Fire org-level similarity + all secondary anchors simultaneously
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=50" > /tmp/r_anchor.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=50&is_headquarters=true" > /tmp/r_anchor.json &
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor1.com" > /tmp/r_c1.json &
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor2.com" > /tmp/r_c2.json &
 # ... all 20-30 calls in the same block ...
@@ -35,7 +35,7 @@ wait   # collect all results before reading
 
 This turns a 60-second sequential loop into a 2–3 second parallel sweep. Never use a for-loop over sequential curl calls.
 
-- Run `GET /api/v1/search/organizations/{organization_id}/similar?limit=50` from the anchor.
+- Run `GET /api/v1/search/organizations/{organization_id}/similar?limit=50&is_headquarters=true` from the anchor.
 - Immediately use the top returned companies as **secondary anchors** and fan out again — companies like risk/compliance, alt data, and niche CRMs only appear in the second ring.
 - Always paginate (`offset`) on promising anchors rather than stopping at page 1. Missing obvious players is almost always a pagination issue, not a data gap.
 - Use `limit=50` — the default of 24 misses too much.
