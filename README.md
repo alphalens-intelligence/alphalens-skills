@@ -6,7 +6,7 @@ Installable agent skills for AlphaLens.
 
 ## Available Skills
 
-- `alphalens-api`: Skill for using the AlphaLens API for organization and product discovery and pipeline workflows.
+- `alphalens-api`: Generates interactive market maps, D3 investor networks, and Chart.js peer benchmarks using the AlphaLens API. Use when the user wants to discover companies, compare competitors, or build visual market intelligence.
 
 ## Install
 

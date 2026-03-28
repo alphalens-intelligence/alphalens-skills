@@ -7,21 +7,24 @@ Produce this as the second file in the Bottom-Up Suite. It shows who is funding 
 ## Step 1 — Fetch funding data and favicons for all indexed companies in parallel
 
 ```bash
+WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
 KEY="${ALPHALENS_API_KEY}"
 
 # Fetch funding for each company
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{org_id1}/funding" > /tmp/fn1.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{org_id2}/funding" > /tmp/fn2.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{org_id1}/funding" > $WORKDIR/fn1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{org_id2}/funding" > $WORKDIR/fn2.json &
 # ... one call per company in the same block ...
 
 # Base64-encode each company favicon in the same block
-curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > /tmp/favicon_domain1.txt &
-curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > /tmp/favicon_domain2.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > $WORKDIR/favicon_domain1.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > $WORKDIR/favicon_domain2.txt &
 # ... one curl | base64 per company in the same block ...
 
 wait
 ```
+
+Only fetch favicons for public domains returned by AlphaLens — never for internal or private hostnames.
 
 The response shape is:
 ```json

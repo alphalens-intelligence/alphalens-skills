@@ -24,7 +24,7 @@ The final path must contain `SKILL.md` directly inside the `alphalens-api` direc
 
 ## HTML Output
 
-The market map and investor network workflows generate standalone HTML files. Company logos are base64-encoded inline alongside the API data — no proxy, no CORS issues. The HTML is fully self-contained and works in any browser, including Claude.ai artifacts.
+Market maps, investor networks, and peer benchmarks are rendered as standalone HTML files with company logos, interactive charts, and PDF export. Favicons are embedded as base64 data URIs — no external dependencies, no proxy required. The HTML opens in any browser, including Claude.ai artifacts.
 
 ## Publish For Installer Use
 

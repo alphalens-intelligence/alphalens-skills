@@ -34,16 +34,17 @@ If `ts_count` is 0, the company has no headcount history — swap it for one tha
 ## Step 3 — Parallel fetch: growth metrics + funding for all peers
 
 ```bash
+WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
 KEY="${ALPHALENS_API_KEY}"
 
 # Growth metrics for anchor + all peers
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{anchor_id}/growth-metrics" > /tmp/gm_anchor.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{peer1_id}/growth-metrics"  > /tmp/gm_peer1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{anchor_id}/growth-metrics" > $WORKDIR/gm_anchor.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{peer1_id}/growth-metrics"  > $WORKDIR/gm_peer1.json &
 # ... all peers in same block ...
 
 # Funding for anchor + all peers (already fetched for investor network — reuse)
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{anchor_id}/funding" > /tmp/fn_anchor.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{anchor_id}/funding" > $WORKDIR/fn_anchor.json &
 # ...
 wait
 ```

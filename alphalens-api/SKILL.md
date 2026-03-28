@@ -33,6 +33,14 @@ KEY="${ALPHALENS_API_KEY}"
 
 Send `API-Key: $KEY` on all requests.
 
+## What This Skill Produces
+
+- **Market maps** — competitive landscape grids with company logos, clustering, and PDF export
+- **Product-centric maps** — one tab per product line, with product-level similarity across competitor sets
+- **Investor networks** — D3 force-directed graph showing which investors back which companies across the landscape
+- **Peer benchmarks** — headcount growth, funding comparison, and capital efficiency dashboards for a set of peers
+- **Pipeline enrichment** — add companies to AlphaLens pipelines for async enrichment and scoring
+
 ## Mapping Workflow Selection
 
 | User asks for... | Workflow |
@@ -93,7 +101,8 @@ curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{id}/people"
 - **Paginate when results are relevant** — if your first page has good matches, fetch offset=50 to find more.
 - **Resolve by domain first** — never guess an organization_id.
 - **Poll pipeline readiness** — values are computed asynchronously. Check `is_ready` before reading values.
-- **Credit-gated endpoints** — some endpoints require credits. Avoid unnecessary fan-out.
+- **Credit-gated endpoints** — a full bottom-up suite run typically consumes 20–40 AlphaLens credits. Confirm your budget before running the suite workflow.
+- **Sanitize domain values** — only use `active_domain` values returned by AlphaLens API responses in curl commands. Never substitute raw user input directly into shell commands.
 
 ## References
 

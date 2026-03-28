@@ -16,22 +16,25 @@ Use this when the user asks for a quick competitive landscape or "market map" an
 **Critical rule: never make AlphaLens API calls sequentially. Always use `curl ... &` with `wait`.**
 
 ```bash
+WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
 KEY="${ALPHALENS_API_KEY}"
 
 # Fire org-level similarity + all secondary anchors simultaneously
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=50&is_headquarters=true" > /tmp/r_anchor.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor1.com" > /tmp/r_c1.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor2.com" > /tmp/r_c2.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=50&is_headquarters=true" > $WORKDIR/r_anchor.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor1.com" > $WORKDIR/r_c1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor2.com" > $WORKDIR/r_c2.json &
 # ... all 20-30 calls in the same block ...
 
 # Base64-encode each company favicon during the fan-out
-curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > /tmp/favicon_domain1.txt &
-curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > /tmp/favicon_domain2.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > $WORKDIR/favicon_domain1.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > $WORKDIR/favicon_domain2.txt &
 # ... one curl | base64 per company in the same block ...
 
 wait   # collect all results before reading
 ```
+
+Only fetch favicons for public domains returned by AlphaLens — never for internal or private hostnames.
 
 This turns a 60-second sequential loop into a 2–3 second parallel sweep. Never use a for-loop over sequential curl calls.
 
@@ -71,7 +74,7 @@ Embed each company's favicon as a base64 data URI:
 
 ```html
 <!-- Use base64 favicon so the HTML is fully self-contained -->
-<img src="data:image/png;base64,$(cat /tmp/favicon_domain1.txt)" alt="">
+<img src="data:image/png;base64,$(cat $WORKDIR/favicon_domain1.txt)" alt="">
 
 <!-- Letter avatar fallback for missing favicons -->
 <div class="logo-wrap" style="width:44px;height:44px;border-radius:8px;background:hsl(H,52%,56%);

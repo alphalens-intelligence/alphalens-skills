@@ -77,34 +77,37 @@ Pick the **2–3 products** that are most commercially distinct. Good signals:
 Run all four signal sources in a **single parallel bash block** — never sequentially.
 
 ```bash
+WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
 KEY="${ALPHALENS_API_KEY}"
 
 # Ring 1: product-level similarity for each selected product
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid1}/similar?limit=50&is_headquarters=true" > /tmp/prod1.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid2}/similar?limit=50&is_headquarters=true" > /tmp/prod2.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid3}/similar?limit=50&is_headquarters=true" > /tmp/prod3.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid1}/similar?limit=50&is_headquarters=true" > $WORKDIR/prod1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid2}/similar?limit=50&is_headquarters=true" > $WORKDIR/prod2.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid3}/similar?limit=50&is_headquarters=true" > $WORKDIR/prod3.json &
 
 # Ring 2: org-level similarity from anchor (offset 0 + offset 50)
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=0&is_headquarters=true"  > /tmp/org0.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=50&is_headquarters=true" > /tmp/org50.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=0&is_headquarters=true"  > $WORKDIR/org0.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{org_id}/similar?limit=50&offset=50&is_headquarters=true" > $WORKDIR/org50.json &
 
 # Ring 3: domain lookups for known players (your own knowledge, 20-40 domains)
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known1.com" > /tmp/d1.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known2.com" > /tmp/d2.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known1.com" > $WORKDIR/d1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known2.com" > $WORKDIR/d2.json &
 # ... all known domains in same block ...
 
 # Ring 4: second-ring org similarity (top 5-8 orgs from Ring 2, run their similarity)
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top1_id}/similar?limit=50&is_headquarters=true" > /tmp/r2_1.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top2_id}/similar?limit=50&is_headquarters=true" > /tmp/r2_2.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top1_id}/similar?limit=50&is_headquarters=true" > $WORKDIR/r2_1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top2_id}/similar?limit=50&is_headquarters=true" > $WORKDIR/r2_2.json &
 
 # Base64-encode each company favicon in the same block
-curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > /tmp/favicon_domain1.txt &
-curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > /tmp/favicon_domain2.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > $WORKDIR/favicon_domain1.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > $WORKDIR/favicon_domain2.txt &
 # ... one curl | base64 per company in the same block ...
 
 wait   # ← everything lands here
 ```
+
+Only fetch favicons for public domains returned by AlphaLens — never for internal or private hostnames.
 
 **The four rings and what each catches:**
 
