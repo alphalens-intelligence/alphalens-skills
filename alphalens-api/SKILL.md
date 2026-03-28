@@ -91,7 +91,7 @@ wait   # collect all results
 
 - **Never make AlphaLens API calls sequentially** — parallel calls turn a 60-second loop into a 2-3 second sweep.
 - **Use `limit=50`** — the default of 24 misses too much.
-- **Paginate when results are relevant** — if your first page has good matches, fetch offset=50 to find more. Don't paginate if the first page already饱和了你的需求.
+- **Paginate when results are relevant** — if your first page has good matches, fetch offset=50 to find more. Don't paginate if the first page already satisfies your needs.
 - **Supplement with your own knowledge** — add companies you know should be there and verify via `by-domain`.
 
 ## Default Workflow
