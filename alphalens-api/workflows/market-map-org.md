@@ -2,39 +2,6 @@
 
 Use this when the user asks for a quick competitive landscape or "market map" and has NOT requested a bottom-up analysis. This is simpler and faster than the product-centric approach — it produces a single-page cluster grid based on organization-level similarity.
 
-**Step 0 — Start the favicon proxy**
-
-Google's favicon CDN (`t0.gstatic.com`) blocks cross-origin canvas reads, breaking PDF export and favicon detection. Start the proxy first:
-
-```js
-// server.js
-const http = require('http'), https = require('https');
-const fs = require('fs'), path = require('path'), url = require('url');
-http.createServer((req, res) => {
-  const { pathname } = url.parse(req.url);
-  if (pathname.startsWith('/favicon/')) {
-    const domain = pathname.slice('/favicon/'.length);
-    const src = `https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON`
-              + `&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=128`;
-    https.get(src, r => {
-      res.writeHead(200, { 'Content-Type': r.headers['content-type'] || 'image/png',
-                           'Cache-Control': 'public, max-age=86400' });
-      r.pipe(res);
-    }).on('error', () => { res.writeHead(404); res.end(); });
-    return;
-  }
-  const file = path.join(__dirname, pathname === '/' ? 'market-map.html' : pathname);
-  fs.readFile(file, (err, data) => {
-    if (err) { res.writeHead(404); res.end(); return; }
-    const mime = { '.html':'text/html', '.js':'text/javascript' };
-    res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream' });
-    res.end(data);
-  });
-}).listen(3456);
-```
-
-In `.claude/launch.json`, set `runtimeExecutable: "node"`, `runtimeArgs: ["server.js"]`, `port: 3456`, `autoPort: false`. Rewrite all favicon `<img>` srcs to `/favicon/{domain}` on `DOMContentLoaded`.
-
 ---
 
 ## Step 1 — Resolve the anchor company
@@ -57,6 +24,12 @@ curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor1.com" > /tmp/r_c1.json &
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/competitor2.com" > /tmp/r_c2.json &
 # ... all 20-30 calls in the same block ...
+
+# Base64-encode each company favicon during the fan-out
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > /tmp/favicon_domain1.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > /tmp/favicon_domain2.txt &
+# ... one curl | base64 per company in the same block ...
+
 wait   # collect all results before reading
 ```
 
@@ -66,6 +39,7 @@ This turns a 60-second sequential loop into a 2–3 second parallel sweep. Never
 - Immediately use the top returned companies as **secondary anchors** and fan out again — companies like risk/compliance, alt data, and niche CRMs only appear in the second ring.
 - Always paginate (`offset`) on promising anchors rather than stopping at page 1. Missing obvious players is almost always a pagination issue, not a data gap.
 - Use `limit=50` — the default of 24 misses too much.
+- If a favicon curl returns empty (no favicon for that domain), use a letter avatar fallback instead.
 
 ---
 
@@ -79,7 +53,7 @@ After the AlphaLens fan-out, apply your own knowledge of the space to identify c
    - If `indexing_failed`, include with `.pending` styling.
    - If `indexed`, include at full opacity.
 
-2. Note that `active_domain` in AlphaLens may differ from the domain you searched — always use the AlphaLens `active_domain` for the profile link, but the real-world domain for the favicon.
+2. Fetch its favicon in the same parallel block above.
 
 ---
 
@@ -92,6 +66,19 @@ Do **not** show approximate company counts in cluster subtitles — they imply t
 ---
 
 ## Step 5 — Render the HTML market map
+
+Embed each company's favicon as a base64 data URI:
+
+```html
+<!-- Use base64 favicon so the HTML is fully self-contained -->
+<img src="data:image/png;base64,$(cat /tmp/favicon_domain1.txt)" alt="">
+
+<!-- Letter avatar fallback for missing favicons -->
+<div class="logo-wrap" style="width:44px;height:44px;border-radius:8px;background:hsl(H,52%,56%);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;">
+  A
+</div>
+```
 
 **Design rules (non-negotiable):**
 - Always **light mode** — `background: #f7f8fc`, dark text. **Never dark mode on any page, including the investor network graph.** Dark mode breaks favicon legibility and makes the graph unreadable.
@@ -109,7 +96,8 @@ Do **not** show approximate company counts in cluster subtitles — they imply t
 
 ## Step 6 — PDF export
 
-Use `html2pdf.js` (CDN) with the following settings for a clean A2 landscape export:
+The HTML is fully self-contained (favicons embedded as base64), so `html2pdf.js` works without any proxy or CORS issues:
+
 ```js
 html2pdf().set({
   margin: 12,
@@ -126,13 +114,13 @@ html2pdf().set({
 }).from(document.body).save();
 ```
 - Set `visibility: hidden` (not `display: none`) on the export button before rendering — hides it from the PDF without shifting layout.
-- Because images are served via the local proxy (same-origin), they render perfectly in the canvas — no CORS issues, logos appear correctly.
 - A2 landscape gives enough room for a 3-column layout without clipping.
 
 ---
 
 ## Common pitfalls
 
-- **Domain mismatch**: AlphaLens `active_domain` ≠ public domain (e.g. Ironclad → `thisisironclad.com`). Use AlphaLens domain for the profile link; use the real domain for the favicon.
+- **Domain mismatch**: AlphaLens `active_domain` ≠ public domain (e.g. Ironclad → `thisisironclad.com`). Use AlphaLens domain for the profile link.
 - **Duplicate entries**: looking up `robin.ai` when `robinai.com` already exists creates a duplicate. Always check by name if the domain lookup returns a brand-new ID.
 - **Pagination**: missing obvious players is almost always a page 1 limitation, not absence from AlphaLens. Paginate with `offset` and use secondary anchors.
+- **Empty favicon**: if a domain has no favicon, `curl | base64` returns empty — always provide the letter avatar as a fallback.

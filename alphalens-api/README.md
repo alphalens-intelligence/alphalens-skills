@@ -22,17 +22,9 @@ To make this skill available locally in a supported agent runtime, copy this fol
 
 The final path must contain `SKILL.md` directly inside the `alphalens-api` directory.
 
-## HTML Output and the Favicon Proxy
+## HTML Output
 
-Some workflows (`market-map-org.md`, `market-map-product.md`, `investor-network.md`) generate HTML files with company logos. They start a local Node.js proxy server to avoid CORS issues when loading favicons and exporting to PDF. See the inline "Step 0 — Start the favicon proxy" in each entry-point workflow.
-
-**Compatibility:** The proxy requires a persistent Node.js process and a browser environment. It works in:
-- Claude Code desktop app (set up the proxy via `.claude/launch.json`)
-- Local dev environments with a terminal
-
-It will **not** work in web-based or ephemeral agent environments that cannot run a long-lived Node process and open a browser window.
-
-**Fallback for restricted environments:** If the proxy is unavailable, logos fall back to coloured letter avatars and PDF export may produce blank logo placeholders. The workflow instructions include bad-favicon detection and fallback logic.
+The market map and investor network workflows generate standalone HTML files. Company logos are base64-encoded inline alongside the API data — no proxy, no CORS issues. The HTML is fully self-contained and works in any browser, including Claude.ai artifacts.
 
 ## Publish For Installer Use
 

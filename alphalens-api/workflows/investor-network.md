@@ -4,7 +4,7 @@ Produce this as the second file in the Bottom-Up Suite. It shows who is funding 
 
 ---
 
-## Step 1 — Fetch funding data for all indexed companies in parallel
+## Step 1 — Fetch funding data and favicons for all indexed companies in parallel
 
 For every company that has a known `organization_id` (i.e. not `indexing_failed` or brand new), call:
 
@@ -31,6 +31,14 @@ Run all calls in parallel. The response shape is:
 }
 ```
 
+In the same parallel block, fetch each company's favicon as base64:
+
+```bash
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain}&size=128" | base64 -w0 > /tmp/favicon_{domain}.txt
+```
+
+If a favicon curl returns empty, use a coloured letter avatar instead.
+
 Skip companies still pending/indexing — they won't have funding data yet.
 
 ---
@@ -47,10 +55,10 @@ Parse each funding round's `investments` array:
 
 ## Step 3 — Build the D3 force-directed network graph
 
-Create a standalone HTML file served by the Node.js proxy server on port 3456.
+Create a standalone HTML file. The HTML is fully self-contained — favicons are base64-encoded inline, no proxy required.
 
 **Node types:**
-- **Company nodes**: larger circles, coloured by cluster (same palette as the market map), with the favicon served via `/favicon/{domain}`, label below. Size optionally scaled by `total_funding_usd`. Anchor company gets gold border + glow.
+- **Company nodes**: larger circles, coloured by cluster (same palette as the market map), with the favicon embedded as a base64 data URI. Size optionally scaled by `total_funding_usd`. Anchor company gets gold border + glow.
 - **Investor nodes**: smaller circles, grey. Size scales with `count` (number of companies backed). Multi-company investors are darker with a name label; solo investors are light grey with just an initial.
 
 **Edge styling:**
@@ -120,3 +128,4 @@ After building the network, share these insights with the user:
 - **Individuals vs. organisations**: `is_organization: false` entries can be angel investors (legitimate) or data noise. Keep them — they often reveal founder-to-founder investment patterns.
 - **Pending companies have no funding data**: only call the funding endpoint for indexed companies.
 - **Viewport containment**: always hard-clamp `d.x` and `d.y` in the tick handler in addition to using boundary forces — forces alone are not sufficient to guarantee all nodes stay in view.
+- **Empty favicon**: if a domain has no favicon, the curl returns empty — always provide a coloured letter avatar as a fallback.
