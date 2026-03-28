@@ -6,13 +6,24 @@ Produce this as the second file in the Bottom-Up Suite. It shows who is funding 
 
 ## Step 1 — Fetch funding data and favicons for all indexed companies in parallel
 
-For every company that has a known `organization_id` (i.e. not `indexing_failed` or brand new), call:
+```bash
+API="https://api-production.alphalens.ai"
+KEY="${ALPHALENS_API_KEY}"
 
-```
-GET /api/v1/entities/organizations/{organization_id}/funding
+# Fetch funding for each company
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{org_id1}/funding" > /tmp/fn1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{org_id2}/funding" > /tmp/fn2.json &
+# ... one call per company in the same block ...
+
+# Base64-encode each company favicon in the same block
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain1}&size=128" | base64 -w0 > /tmp/favicon_domain1.txt &
+curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain2}&size=128" | base64 -w0 > /tmp/favicon_domain2.txt &
+# ... one curl | base64 per company in the same block ...
+
+wait
 ```
 
-Run all calls in parallel. The response shape is:
+The response shape is:
 ```json
 {
   "funding_rounds": [
@@ -31,15 +42,7 @@ Run all calls in parallel. The response shape is:
 }
 ```
 
-In the same parallel block, fetch each company's favicon as base64:
-
-```bash
-curl -s "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://{domain}&size=128" | base64 -w0 > /tmp/favicon_{domain}.txt
-```
-
-If a favicon curl returns empty, use a coloured letter avatar instead.
-
-Skip companies still pending/indexing — they won't have funding data yet.
+Skip companies still pending/indexing — they won't have funding data yet. If a favicon curl returns empty, use a coloured letter avatar instead.
 
 ---
 

@@ -21,4 +21,4 @@ Use free-text search for open-ended market discovery prompts:
 - `Find AI procurement startups in Europe.`
 - `Find products for finance teams that automate AP workflows.`
 
-For filter parameters and all available endpoints, see [references/REFERENCE.md](references/REFERENCE.md).
+For filter parameters and all available endpoints, see [REFERENCE.md](REFERENCE.md).
