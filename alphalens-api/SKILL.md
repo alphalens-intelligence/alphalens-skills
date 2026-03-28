@@ -47,6 +47,53 @@ metadata:
   use `GET /api/v1/search/organizations/search` or `GET /api/v1/search/products/search`.
 - Do not turn "Find companies similar to Ramp" into a free-text search if you can resolve Ramp directly.
 
+## Comprehensive Fan-Out Strategy
+
+For thorough market research, use this 4-ring fan-out strategy. **Fire ALL API calls in parallel** — never sequentially. Use `limit=50` and paginate with `offset` when needed.
+
+### The 4 Rings
+
+| Ring | Method | What it surfaces |
+|------|--------|------------------|
+| 1 — Product similarity | `/search/products/{id}/similar` | Niche product lines inside large orgs; companies that org-level misses |
+| 2 — Org similarity ring 1 | `/search/organizations/{id}/similar?limit=50` | Direct org-level competitors; the obvious players |
+| 3 — Known player sweep | `by-domain` for domains you know | Established names that may be too large/small for similarity (incumbents, emerging startups) |
+| 4 — Org similarity ring 2 | `/search/organizations/{ring2_id}/similar` | Niche players only reachable by pivoting through ring-1 results |
+
+### How to Execute
+
+Fire all four rings simultaneously in a single parallel block:
+
+```bash
+API="https://api-production.alphalens.ai"
+KEY="${ALPHALENS_API_KEY}"
+
+# Ring 1: product-level similarity (fire for each qualifying product)
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid1}/similar?limit=50" > /tmp/prod1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid2}/similar?limit=50" > /tmp/prod2.json &
+
+# Ring 2: org-level similarity from anchor (use offset=0 AND offset=50)
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=50&offset=0"  > /tmp/org0.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=50&offset=50" > /tmp/org50.json &
+
+# Ring 3: domain lookups for known players (your own knowledge, 20-40 domains)
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known1.com" > /tmp/d1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known2.com" > /tmp/d2.json &
+
+# Ring 4: second-ring org similarity (top 5-8 orgs from Ring 2)
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top1_id}/similar?limit=50" > /tmp/r2_1.json &
+curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_top2_id}/similar?limit=50" > /tmp/r2_2.json &
+
+wait   # collect all results
+```
+
+### Key Rules
+
+- **Never make AlphaLens API calls sequentially** — parallel calls turn a 60-second loop into a 2-3 second sweep.
+- **Always paginate** on promising anchors with `offset=50` — missing obvious players is almost always a pagination issue.
+- **Use `limit=50`** — the default of 24 misses too much.
+- **Supplement with your own knowledge** — add companies you know should be there and verify via `by-domain`.
+
 ## Default Workflow
 
 ### Research companies similar to a known company

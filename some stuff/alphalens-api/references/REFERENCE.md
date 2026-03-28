@@ -29,25 +29,14 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
 
 ## Which Endpoint Does What
 
-### Organization Resolution
+- `GET /api/v1/entities/organizations/search-by-name/{organization_name}`
+  resolves a company name into candidate organizations
 - `GET /api/v1/entities/organizations/by-domain/{domain}`
-  resolves a known company domain into a specific organization (returns `organization_id`)
+  resolves a known company domain into a specific organization
 - `GET /api/v1/entities/organizations/{organization_id}`
   fetches full organization details
-
-### Organization Enrichment (requires organization_id)
-- `GET /api/v1/entities/organizations/{organization_id}/products`
-  lists all products for the organization
 - `GET /api/v1/entities/organizations/{organization_id}/funding`
-  returns funding rounds and investor details
-- `GET /api/v1/entities/organizations/{organization_id}/growth-metrics`
-  returns headcount, web traffic, LinkedIn followers, job openings time series
-- `GET /api/v1/entities/organizations/{organization_id}/people`
-  returns founders and leadership
-- `GET /api/v1/entities/organizations/{organization_id}/addresses`
-  returns headquarters and branch office locations
-
-### Search
+  fetches funding rounds, investors, and total funding for an organization
 - `GET /api/v1/search/organizations/{organization_id}/similar`
   finds organizations similar to a known reference organization
 - `GET /api/v1/search/organizations/search`
@@ -60,9 +49,7 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
   performs product discovery by customer-base or target-user description
 - `GET /api/v1/search/products/{product_id}/similar`
   finds products similar to a known reference product
-
-### Pipeline
-- `GET /api/v1/pipelines/{pipeline_id}/organizations`
+- `POST /api/v1/pipelines/{pipeline_id}/organizations`
   adds an organization to a pipeline
 - `GET /api/v1/pipelines/{pipeline_id}/items`
   lists pipeline items with values
@@ -70,6 +57,8 @@ Bearer auth exists in the API, but API key auth is the preferred default for age
   checks if pipeline item values are ready
 - `GET /api/v1/pipelines/{pipeline_id}/items/{pipeline_item_id}/values`
   reads final pipeline item values
+- `POST https://api-venture-production.deckmatch.com/api/v1/indexer/reindex/organization?organization_id={id}`
+  triggers reindexing for an organization (uses deckmatch.com base URL, not alphalens.ai)
 
 ## Search Strategy
 
@@ -83,7 +72,7 @@ Good examples:
 
 Recommended flow:
 
-1. Resolve the company by domain
+1. Resolve the company by domain or name
 2. Call `GET /api/v1/search/organizations/{organization_id}/similar`
 
 ### Prefer product search for precise market mapping
@@ -104,70 +93,19 @@ Examples:
 
 If the end goal is still a company list, you can search products first and then roll results up to their organizations.
 
-## Comprehensive Fan-Out Strategy
-
-For thorough market research, use this 4-ring fan-out. **Fire all API calls in parallel** — never sequentially.
-
-### The 4 Rings
-
-| Ring | Method | What it surfaces |
-|------|--------|------------------|
-| 1 — Product similarity | `/search/products/{id}/similar` | Niche product lines inside large orgs; companies that org-level misses |
-| 2 — Org similarity ring 1 | `/search/organizations/{id}/similar?limit=50` | Direct org-level competitors; the obvious players |
-| 3 — Known player sweep | `by-domain` for known domains | Established names too large/small for similarity |
-| 4 — Org similarity ring 2 | `/search/organizations/{ring2_id}/similar` | Niche players only reachable through ring-1 results |
-
-### Execution Pattern
-
-```bash
-API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
-
-# Ring 1: product-level similarity
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid}/similar?limit=50" > /tmp/prod.json &
-
-# Ring 2: org similarity (paginate offset=0 AND offset=50)
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{id}/similar?limit=50&offset=0" > /tmp/org0.json &
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{id}/similar?limit=50&offset=50" > /tmp/org50.json &
-
-# Ring 3: known player domain lookups
-curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/known1.com" > /tmp/d1.json &
-
-# Ring 4: second-ring org similarity
-curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{ring2_id}/similar?limit=50" > /tmp/r2.json &
-
-wait
-```
-
-### Key Rules
-
-- **Never call AlphaLens APIs sequentially** — use parallel curls with `&` and `wait`
-- **Use `limit=50`** — default of 24 misses too much
-- **Always paginate** with `offset=50` on promising anchors
-- **Supplement with your own knowledge** of the market
-
 ## Core Read Workflows
 
 ### 1. Resolve organizations before ID-anchored searches
 
 Useful endpoints:
 
+- `GET /api/v1/entities/organizations/search-by-name/{organization_name}`
 - `GET /api/v1/entities/organizations/by-domain/{domain}`
 - `GET /api/v1/entities/organizations/{organization_id}`
 
-Use these when a user gives you a domain and you need an `organization_id`.
+Use these when a user gives you a company name or domain and you need an `organization_id`.
 
-### 2. Enrich organization data
-
-Once you have an `organization_id`, fetch additional data:
-
-- `GET /api/v1/entities/organizations/{organization_id}/products` - List the company's products
-- `GET /api/v1/entities/organizations/{organization_id}/funding` - Funding rounds and investors
-- `GET /api/v1/entities/organizations/{organization_id}/growth-metrics` - Headcount, web traffic, LinkedIn followers, job openings
-- `GET /api/v1/entities/organizations/{organization_id}/people` - Founders and leadership
-- `GET /api/v1/entities/organizations/{organization_id}/addresses` - HQ and branch locations
-
-### 3. Resolve products or fetch product detail
+### 2. Resolve products or fetch product detail
 
 Useful endpoints:
 
@@ -175,6 +113,14 @@ Useful endpoints:
 - `GET /api/v1/entities/products/by-domain/{domain}`
 
 Use these when you need a product detail fetch or product list for a known company domain.
+
+### 3. Fetch funding data for an organization
+
+Use:
+
+- `GET /api/v1/entities/organizations/{organization_id}/funding`
+
+Returns `funding_rounds` (with `investments`, `raised_amount_usd`, `investment_stage`), `total_funding_usd`, and `index_status`.
 
 ## Search Endpoints
 
@@ -206,19 +152,20 @@ All search endpoints support filters for location, company age/size, product cat
 
 Use pipelines for list building, enrichment, and async processing.
 
-### Add organizations to a pipeline
+### Safe mutation order
 
-1. Use `POST /api/v1/pipelines/{pipeline_id}/organizations` to add an organization:
-
-```http
-POST /api/v1/pipelines/{pipeline_id}/organizations
-API-Key: <ALPHALENS_API_KEY>
-Content-Type: application/json
-
-{
-  "organization_id": 123
-}
-```
+1. Inspect existing collections first:
+   - `GET /api/v1/collections`
+2. Create a collection only if needed:
+   - `POST /api/v1/collections`
+3. Inspect available columns:
+   - `GET /api/v1/collections/columns/{collection_id}`
+4. Update configured columns if needed:
+   - `PATCH /api/v1/collections/columns/{collection_id}`
+5. Create custom question columns when enrichment logic is required:
+   - `POST /api/v1/custom-questions/`
+6. Add organizations to a pipeline:
+   - `POST /api/v1/pipelines/{pipeline_id}/organizations`
 
 ### Read pipeline items
 
@@ -236,10 +183,19 @@ Content-Type: application/json
 - Do not assume item values are ready immediately after adding an organization.
 - Poll the item status endpoint until `is_ready` is true before treating values as final.
 
+### Collection creation notes
+
+The API exposes `POST /api/v1/collections` for creating collections. Inspect the live OpenAPI for the current request schema before generating bodies.
+
+### Custom question notes
+
+The API exposes `POST /api/v1/custom-questions/` for computed columns. These can be plain LLM questions, tool-enabled questions, or formulas. Inspect the live schema before creating them.
+
 ## Heuristics
 
 - If the user asks "find companies like X", resolve `X` to an organization, then use the similar organizations endpoint.
 - If the user asks for a competitive landscape around a known company, use direct similarity.
 - If the user asks "find products for this market", use the product search endpoints.
 - If the user's wording is product-led, prefer product search over organization search.
+- If the user asks for a target list with enrichment, inspect collections and pipelines before creating new ones.
 - If the user gives a domain, prefer by-domain resolution over fuzzy name matching.
