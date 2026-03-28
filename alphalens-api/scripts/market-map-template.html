@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{ANCHOR} Market Map</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f7f8fc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a202c; padding: 24px; }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    .subtitle { color: #718096; margin-bottom: 24px; font-size: 14px; }
+
+    /* Clusters */
+    .clusters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .cluster { background: #fff; border-radius: 8px; padding: 16px; border-left: 4px solid #3182ce; }
+    .cluster:nth-child(2) { border-color: #e53e3e; }   /* red */
+    .cluster:nth-child(3) { border-color: #dd6b20; }   /* amber */
+    .cluster:nth-child(4) { border-color: #38a169; }   /* green */
+    .cluster:nth-child(5) { border-color: #805ad5; }   /* purple */
+    .cluster:nth-child(6) { border-color: #3182ce; }   /* blue */
+    .cluster:nth-child(7) { border-color: #d69e2e; }   /* yellow */
+    .cluster:nth-child(8) { border-color: #319795; }   /* teal */
+    .cluster:nth-child(9) { border-color: #718096; }   /* grey */
+    .cluster-name { font-weight: 600; font-size: 14px; margin-bottom: 12px; color: #2d3748; }
+    .companies { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    /* Company card */
+    .company { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; width: 80px; }
+    .logo-wrap { width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+    .logo-wrap img { width: 32px; height: 32px; object-fit: contain; }
+    .company-name { font-size: 11px; text-align: center; color: #4a5568; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .company.anchor .logo-wrap { border: 2px solid #d69e2e; box-shadow: 0 0 10px rgba(214,158,46,0.3); }
+    .company.pending { opacity: 0.65; }
+    .company.pending .company-name { font-style: italic; }
+
+    /* Legend */
+    .legend { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #718096; }
+    .legend span { margin-right: 16px; }
+
+    /* Export button */
+    .export-btn { display: none; }
+  </style>
+</head>
+<body>
+  <h1>{ANCHOR}</h1>
+  <p class="subtitle">Click any logo to open its AlphaLens profile</p>
+
+  <div class="clusters">
+    <!-- ADD CLUSTERS HERE -->
+    <!-- Example:
+    <div class="cluster">
+      <div class="cluster-name">Category Name</div>
+      <div class="companies">
+        <a class="company anchor" href="https://app.alphalens.ai/discover/organization/{active_domain}" target="_blank">
+          <div class="logo-wrap"><img src="/favicon/{domain}" alt=""></div>
+          <span class="company-name">Company</span>
+        </a>
+      </div>
+    </div>
+    -->
+  </div>
+
+  <div class="legend">
+    <span><strong>Legend:</strong></span>
+    <span>Gold border = anchor company</span>
+    <span>Italic = pending/indexing</span>
+  </div>
+
+  <button class="export-btn" onclick="exportPDF()">Export PDF</button>
+
+  <script>
+    // Rewrite favicon srcs to proxy
+    document.querySelectorAll('.logo-wrap img').forEach(img => {
+      const src = img.getAttribute('src');
+      if (src && !src.startsWith('/favicon/')) {
+        try {
+          const url = new URL(src);
+          img.setAttribute('src', '/favicon/' + url.hostname);
+        } catch(e) {}
+      }
+    });
+
+    // Detect and replace bad favicons
+    async function init() {
+      const badHash = await loadHash('/favicon/xyznotarealdomain99999abc.invalid');
+      document.querySelectorAll('.logo-wrap img').forEach(img => {
+        const check = () => { if (hashImg(img) === badHash) replaceWithInitial(img); };
+        img.complete ? check() : img.addEventListener('load', check);
+      });
+    }
+
+    function hashImg(imgEl) {
+      const c = document.createElement('canvas'); c.width = c.height = 16;
+      const ctx = c.getContext('2d'); ctx.drawImage(imgEl, 0, 0, 16, 16);
+      return ctx.getImageData(0,0,16,16).data.reduce((a,v) => a+v, 0);
+    }
+    function loadHash(url) {
+      return new Promise(r => { const i = new Image();
+        i.onload = () => r(hashImg(i)); i.onerror = () => r(null); i.src = url; });
+    }
+    function replaceWithInitial(img) {
+      const name = img.closest('a.company')?.querySelector('.company-name')?.textContent?.trim() || '?';
+      const hue = [...name].reduce((a,c) => a + c.charCodeAt(0), 0) % 360;
+      img.closest('.logo-wrap').innerHTML =
+        `<div style="width:32px;height:32px;border-radius:8px;background:hsl(${hue},52%,56%);
+         display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
+         font-size:14px;font-family:-apple-system,sans-serif;">${name[0].toUpperCase()}</div>`;
+    }
+
+    function exportPDF() {
+      const btn = document.querySelector('.export-btn');
+      btn.style.visibility = 'hidden';
+      html2pdf().set({
+        margin: 12,
+        filename: 'market-map.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2, useCORS: false, allowTaint: false,
+          backgroundColor: '#f7f8fc',
+          windowWidth: Math.max(document.documentElement.scrollWidth, 1560),
+          scrollX: 0, scrollY: 0
+        },
+        jsPDF: { unit: 'mm', format: 'a2', orientation: 'landscape' },
+        pagebreak: { mode: 'avoid-all' }
+      }).from(document.body).save().then(() => {
+        btn.style.visibility = '';
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
