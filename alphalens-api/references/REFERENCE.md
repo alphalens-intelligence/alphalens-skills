@@ -143,7 +143,7 @@ wait
 
 - **Never call AlphaLens APIs sequentially** — use parallel curls with `&` and `wait`
 - **Use `limit=50`** — default of 24 misses too much
-- **Always paginate** with `offset=50` on promising anchors
+- **Paginate when results are relevant** — if your first page has good matches, fetch offset=50 to find more
 - **Supplement with your own knowledge** of the market
 
 ## Core Read Workflows
