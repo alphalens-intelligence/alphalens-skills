@@ -2,7 +2,38 @@
 
 Use this when the user asks for a quick competitive landscape or "market map" and has NOT requested a bottom-up analysis. This is simpler and faster than the product-centric approach — it produces a single-page cluster grid based on organization-level similarity.
 
-**Prerequisite:** Read `workflows/favicon-proxy.md` and start the proxy server before rendering.
+**Step 0 — Start the favicon proxy**
+
+Google's favicon CDN (`t0.gstatic.com`) blocks cross-origin canvas reads, breaking PDF export and favicon detection. Start the proxy first:
+
+```js
+// server.js
+const http = require('http'), https = require('https');
+const fs = require('fs'), path = require('path'), url = require('url');
+http.createServer((req, res) => {
+  const { pathname } = url.parse(req.url);
+  if (pathname.startsWith('/favicon/')) {
+    const domain = pathname.slice('/favicon/'.length);
+    const src = `https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON`
+              + `&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=128`;
+    https.get(src, r => {
+      res.writeHead(200, { 'Content-Type': r.headers['content-type'] || 'image/png',
+                           'Cache-Control': 'public, max-age=86400' });
+      r.pipe(res);
+    }).on('error', () => { res.writeHead(404); res.end(); });
+    return;
+  }
+  const file = path.join(__dirname, pathname === '/' ? 'market-map.html' : pathname);
+  fs.readFile(file, (err, data) => {
+    if (err) { res.writeHead(404); res.end(); return; }
+    const mime = { '.html':'text/html', '.js':'text/javascript' };
+    res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream' });
+    res.end(data);
+  });
+}).listen(3456);
+```
+
+In `.claude/launch.json`, set `runtimeExecutable: "node"`, `runtimeArgs: ["server.js"]`, `port: 3456`, `autoPort: false`. Rewrite all favicon `<img>` srcs to `/favicon/{domain}` on `DOMContentLoaded`.
 
 ---
 

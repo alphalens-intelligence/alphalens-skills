@@ -58,6 +58,19 @@ Send `API-Key: $KEY` on all requests.
 | `POST /api/v1/pipelines/{id}/documents` | Submit document to pipeline |
 | `POST /api/v1/pipelines/{id}/documents-binary-data` | Submit binary data to pipeline |
 
+## Pipeline Operations
+
+Always inspect before mutating. Follow this order:
+
+1. Inspect existing items: `GET /api/v1/pipelines/{pipeline_id}/items`
+2. Add organizations: `POST /api/v1/pipelines/{pipeline_id}/organizations` with `{"organization_id": 123}`
+3. Poll readiness: `GET /api/v1/pipelines/{pipeline_id}/items/{item_id}/status` — wait for `is_ready: true`
+4. Read values: `GET /api/v1/pipelines/{pipeline_id}/items/{item_id}/values`
+
+Submit documents via `POST /api/v1/pipelines/{pipeline_id}/documents` or `documents-binary-data`.
+
+Collections and custom questions are managed in the [AlphaLens web interface](https://app.alphalens.ai), not via the public API.
+
 ## Common Filters
 
 All search endpoints support:

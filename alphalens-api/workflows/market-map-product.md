@@ -4,8 +4,6 @@ This is the market map component of the Bottom-Up Market Intelligence Suite. Use
 
 It produces **one market map per qualifying product** on a single tabbed HTML page. Each tab has its own competitor set driven by product-level similarity, not org-level similarity. This is what makes bottom-up mappings more precise — a company with 3 products competes in 3 different spaces, and org-level similarity blurs them into one.
 
-**Prerequisite:** Read `workflows/favicon-proxy.md` and start the proxy server before rendering.
-
 **Always run Step 0 first.** A raw product array almost always contains delivery channels and feature clusters masquerading as products. Mapping them wastes effort and produces noise.
 
 ---
@@ -139,11 +137,14 @@ After the product similarity fan-out, add companies you know should be there. Ch
 
 ## Step 4 — Cluster per product, then build the tabbed HTML page
 
-- Build **one grid section per product** inside a single HTML file
+**Design rules:** Follow `workflows/market-map-org.md` Step 5 exactly for the base grid, cluster styling, anchor gold border, and PDF export settings. The following additions apply specifically to the tabbed product map:
+
+- Build **one `<section class="map-section">` per product** inside a single HTML file
 - Use **tab buttons** at the top to switch between maps
 - Each tab gets its own colour palette (e.g. Ocean=blues, Air=ambers, Carbon=greens)
 - Anchor company appears on **every** tab with gold border
-- PDF export **must collate all three product tabs** into a single PDF (one page per tab). Never export only the active tab. Temporarily show all `.map-section` divs, clone them into a container, export the container, then restore original state.
+- Map sections default to `display: none`; `.active` sets `display: block`
+- PDF export **must collate all tabs** into a single PDF (one page per tab). Never export only the active tab. Temporarily show all `.map-section` divs, clone them into a container, export the container, then restore original state.
 
 ```js
 // Tab switcher

@@ -2,8 +2,6 @@
 
 Produce this as the third file in the Bottom-Up Suite. It gives a side-by-side picture of the anchor company against its closest peers: headcount trajectory, funding scale, capital efficiency, and qualitative positioning.
 
-**Prerequisite:** Read `workflows/favicon-proxy.md` — the benchmark page is served by the same proxy server.
-
 ---
 
 ## Step 1 — Identify 5 peers by size similarity

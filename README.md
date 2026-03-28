@@ -28,22 +28,20 @@ npx skills add https://github.com/alphalens-intelligence/alphalens-skills
 alphalens-skills/
 └── alphalens-api/
     ├── SKILL.md           # Main agent-readable skill definition
-    ├── workflows/         # Step-by-step workflow files
-    │   ├── org-market-map.md
-    │   ├── product-market-map.md
+    ├── workflows/         # Deliverable workflow files
+    │   ├── suite-bottom-up.md
+    │   ├── market-map-org.md
+    │   ├── market-map-product.md
     │   ├── investor-network.md
-    │   ├── peer-benchmark.md
-    │   ├── bottom-up-suite.md
-    │   ├── favicon-proxy.md
-    │   └── pipeline-enrichment.md
-    ├── references/
-    │   ├── REFERENCE.md  # Endpoint mapping and workflow guidance
-    │   └── EXAMPLES.md   # Example prompts and request shapes
-    └── README.md         # Local installation and publishing notes
+    │   └── peer-benchmark.md
+    └── references/
+        ├── REFERENCE.md  # Endpoint catalog + pipeline operations
+        └── EXAMPLES.md   # Example prompts and request shapes
 ```
 
 ## Notes
 
 - `SKILL.md` is the main agent-readable skill definition.
-- `references/` contains supplementary documentation loaded on demand.
+- `workflows/` contains deliverable workflows (market maps, investor network, peer benchmark, orchestrator). Files prefixed with `suite-` are orchestrators that delegate to other workflows.
+- `references/` contains reference material (endpoint catalog, examples).
 - `alphalens-api/README.md` explains local copying and publishing usage.

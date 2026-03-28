@@ -37,13 +37,12 @@ Send `API-Key: $KEY` on all requests.
 
 | User asks for... | Workflow |
 |---|---|
-| "market map", "competitive landscape", "who competes with X" | Read [workflows/org-market-map.md](workflows/org-market-map.md) |
-| "bottom-up mapping", "deep dive", "full mapping", "product-level analysis" | Read [workflows/bottom-up-suite.md](workflows/bottom-up-suite.md) |
-| "product map", "product-level landscape", "tabbed map" | Read [workflows/product-market-map.md](workflows/product-market-map.md) |
+| "market map", "competitive landscape", "who competes with X" | Read [workflows/market-map-org.md](workflows/market-map-org.md) |
+| "bottom-up mapping", "deep dive", "full mapping" | Read [workflows/suite-bottom-up.md](workflows/suite-bottom-up.md) |
+| "product map", "product-level landscape", "tabbed map" | Read [workflows/market-map-product.md](workflows/market-map-product.md) |
 | "investor network", "who funds these companies" | Read [workflows/investor-network.md](workflows/investor-network.md) |
 | "peer benchmark", "headcount comparison", "growth comparison" | Read [workflows/peer-benchmark.md](workflows/peer-benchmark.md) |
-| "enrich", "pipeline", "target list", "add to pipeline" | Read [workflows/pipeline-enrichment.md](workflows/pipeline-enrichment.md) |
-| Single-company product discovery | Read [workflows/product-market-map.md](workflows/product-market-map.md) |
+| "enrich", "pipeline", "target list" | See [references/REFERENCE.md#pipeline-operations](references/REFERENCE.md#pipeline-operations) |
 
 ## Quick Reference
 

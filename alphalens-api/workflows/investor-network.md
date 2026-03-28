@@ -2,8 +2,6 @@
 
 Produce this as the second file in the Bottom-Up Suite. It shows who is funding the landscape and where capital is concentrated or absent.
 
-**Prerequisite:** Read `workflows/favicon-proxy.md` — the investor network page is served by the same proxy server.
-
 ---
 
 ## Step 1 — Fetch funding data for all indexed companies in parallel

@@ -9,6 +9,12 @@
 - `Find products similar to Gong for mid-market sales teams.`
 - `Build a target list of AI procurement startups and enrich it in a pipeline.`
 - `Resolve Ramp by domain, find similar companies, and summarize the overlap.`
+- `Do a bottom-up deep dive on legora.com using AlphaLens.`
+- `Show me the investor network for the companies around Legora.`
+- `Build a peer benchmark comparing Legora to its 5 closest competitors by headcount and funding.`
+- `Do a bottom-up market map for Ironclad — I want to see the product-level competitive landscape.`
+- `Map the investor network for the companies around zoominfo.com — who's funding them?`
+- `Run a peer benchmark for Ramp against similar companies — headcount growth, funding, and capital efficiency.`
 
 ## Organization Search Examples
 
@@ -61,7 +67,7 @@ Recommended path:
 GET /api/v1/search/products/search?description=AI%20for%20retinal%20scanning%20to%20detect%20cancer
 API-Key: <ALPHALENS_API_KEY>
 ```
-
+fw
 If you already have a known `product_id`, use:
 
 ```http
