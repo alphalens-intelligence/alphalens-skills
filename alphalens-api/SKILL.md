@@ -2,12 +2,13 @@
 name: alphalens-api
 description: >-
   Use this skill whenever the user wants to discover companies, search for products,
-  build market maps, manage collections, or run pipeline workflows using AlphaLens.
+  build market maps, manage pipelines, or run enrichment workflows using AlphaLens.
   Triggers include: any mention of 'AlphaLens', 'market map', 'competitive landscape',
   'company discovery', 'product search', 'similar companies', 'find companies like',
-  'company enrichment', 'target list', or requests to find, enrich, or visualize
-  company/product data. Also use when the user asks to build a market landscape,
-  research competitors, or automate prospecting workflows.
+  'company enrichment', 'target list', 'bottom-up', 'investor network', 'peer benchmark',
+  'headcount comparison', 'growth comparison', 'pipeline', 'enrich', or requests to find,
+  enrich, or visualize company/product data. Also use when the user asks to build a market
+  landscape, research competitors, or automate prospecting workflows.
 metadata:
   {
     "openclaw":
@@ -23,17 +24,6 @@ metadata:
 
 **Note:** This skill requires an active [AlphaLens subscription](https://alphalens.ai) with API access.
 
-## Quick Reference
-
-| Task | Guide |
-|------|-------|
-| Find similar companies | Use `by-domain` + `/similar` — see below |
-| Search products | Use `/search/products` — see below |
-| Market / competitive map | Read [references/market-map.md](references/market-map.md) |
-| Product research | Read [references/product-research.md](references/product-research.md) |
-| Pipeline workflows | Read [references/pipeline.md](references/pipeline.md) |
-| All endpoints | See [references/REFERENCE.md](references/REFERENCE.md) |
-
 ## Authentication
 
 ```bash
@@ -42,6 +32,27 @@ KEY="${ALPHALENS_API_KEY}"
 ```
 
 Send `API-Key: $KEY` on all requests.
+
+## Mapping Workflow Selection
+
+| User asks for... | Workflow |
+|---|---|
+| "market map", "competitive landscape", "who competes with X" | Read [workflows/org-market-map.md](workflows/org-market-map.md) |
+| "bottom-up mapping", "deep dive", "full mapping", "product-level analysis" | Read [workflows/bottom-up-suite.md](workflows/bottom-up-suite.md) |
+| "product map", "product-level landscape", "tabbed map" | Read [workflows/product-market-map.md](workflows/product-market-map.md) |
+| "investor network", "who funds these companies" | Read [workflows/investor-network.md](workflows/investor-network.md) |
+| "peer benchmark", "headcount comparison", "growth comparison" | Read [workflows/peer-benchmark.md](workflows/peer-benchmark.md) |
+| "enrich", "pipeline", "target list", "add to pipeline" | Read [workflows/pipeline-enrichment.md](workflows/pipeline-enrichment.md) |
+| Single-company product discovery | Read [workflows/product-market-map.md](workflows/product-market-map.md) |
+
+## Quick Reference
+
+| Task | Guide |
+|------|-------|
+| Find similar companies | Use `by-domain` + `/similar` — see below |
+| Search products | Use `/search/products` — see below |
+| All endpoints | See [references/REFERENCE.md](references/REFERENCE.md) |
+| Example prompts | See [references/EXAMPLES.md](references/EXAMPLES.md) |
 
 ## Core Patterns
 

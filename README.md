@@ -28,6 +28,14 @@ npx skills add https://github.com/alphalens-intelligence/alphalens-skills
 alphalens-skills/
 └── alphalens-api/
     ├── SKILL.md           # Main agent-readable skill definition
+    ├── workflows/         # Step-by-step workflow files
+    │   ├── org-market-map.md
+    │   ├── product-market-map.md
+    │   ├── investor-network.md
+    │   ├── peer-benchmark.md
+    │   ├── bottom-up-suite.md
+    │   ├── favicon-proxy.md
+    │   └── pipeline-enrichment.md
     ├── references/
     │   ├── REFERENCE.md  # Endpoint mapping and workflow guidance
     │   └── EXAMPLES.md   # Example prompts and request shapes

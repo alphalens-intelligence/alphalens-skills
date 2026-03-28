@@ -56,6 +56,7 @@ Send `API-Key: $KEY` on all requests.
 | `GET /api/v1/pipelines/{id}/items/{item_id}/status` | Check item readiness |
 | `GET /api/v1/pipelines/{id}/items/{item_id}/values` | Read item values |
 | `POST /api/v1/pipelines/{id}/documents` | Submit document to pipeline |
+| `POST /api/v1/pipelines/{id}/documents-binary-data` | Submit binary data to pipeline |
 
 ## Common Filters
 
@@ -63,13 +64,13 @@ All search endpoints support:
 
 | Parameter | Description |
 |------------|-------------|
-| `is_headquarters` | Filter HQ only (default: true) |
+| `is_headquarters` | **Always set to `true`** — filters to HQ only and returns much higher quality matches. Only omit if the user explicitly asks for all locations. |
 | `country_keys` | ISO country codes, e.g., `["US", "GB"]` |
 | `region_keys` | State/region codes, e.g., `["NEW_YORK-US"]` |
 | `year_founded_min/max` | Company age filter |
 | `employee_count_range_min/max` | Company size filter |
 | `skip` | Pagination offset |
-| `limit` | Page size (max 100, default 24) |
+| `limit` | Page size (max 100, default 24). **Always use `50`** — the default of 24 misses too much. |
 
 ## Not Available in Public API
 

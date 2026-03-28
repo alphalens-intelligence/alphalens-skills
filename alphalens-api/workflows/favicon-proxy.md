@@ -1,6 +1,6 @@
 # Favicon Proxy Server & Bad Favicon Detection
 
-This is shared infrastructure required for market map workflows. Set it up before rendering any HTML output.
+This is shared infrastructure required by all market map workflows (org-level and product-centric) and the investor network graph. Set it up before rendering any HTML output.
 
 ## Why this is needed
 
@@ -37,7 +37,7 @@ http.createServer((req, res) => {
 }).listen(3456);
 ```
 
-In `.cursor/launch.json`, set `runtimeExecutable: "node"`, `runtimeArgs: ["server.js"]`, `port: 3456`, `autoPort: false`.
+In `.claude/launch.json`, set `runtimeExecutable: "node"`, `runtimeArgs: ["server.js"]`, `port: 3456`, `autoPort: false`.
 
 In the HTML, rewrite all favicon `<img>` src attributes to `/favicon/{domain}` on `DOMContentLoaded` — never embed the Google CDN URL directly.
 

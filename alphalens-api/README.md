@@ -7,6 +7,7 @@ This folder contains a publishable skill package for the AlphaLens API.
 ## Contents
 
 - `SKILL.md`: Main skill definition used by agent runtimes
+- `workflows/`: Step-by-step workflow files (market maps, investor network, peer benchmark, etc.)
 - `references/REFERENCE.md`: Endpoint mapping and workflow rules
 - `references/EXAMPLES.md`: Example prompts and request shapes
 
@@ -35,6 +36,14 @@ The safest layout for a dedicated skills repo is:
 your-skills-repo/
 └── alphalens-api/
     ├── SKILL.md
+    ├── workflows/
+    │   ├── org-market-map.md
+    │   ├── product-market-map.md
+    │   ├── investor-network.md
+    │   ├── peer-benchmark.md
+    │   ├── bottom-up-suite.md
+    │   ├── favicon-proxy.md
+    │   └── pipeline-enrichment.md
     └── references/
         ├── REFERENCE.md
         └── EXAMPLES.md
