@@ -2,7 +2,7 @@
 
 Installable agent skills for AlphaLens.
 
-**Note:** These skills require an active [AlphaLens subscription](https://alphalens.ai) with API access. Contact sales@alphalens.ai for pricing.
+**Note:** These skills require an active [AlphaLens subscription](https://alphalens.ai) with API access. Contact contact@alphalens.ai for pricing.
 
 ## Available Skills
 
