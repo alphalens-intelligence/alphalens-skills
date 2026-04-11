@@ -50,6 +50,7 @@ Send `API-Key: $KEY` on all requests.
 | "product map", "product-level landscape", "tabbed map" | Read [workflows/market-map-product.md](workflows/market-map-product.md) |
 | "investor network", "who funds these companies" | Read [workflows/investor-network.md](workflows/investor-network.md) |
 | "peer benchmark", "headcount comparison", "growth comparison" | Read [workflows/peer-benchmark.md](workflows/peer-benchmark.md) |
+| "white space", "blue ocean", "uncontested", "market gap", "find positioning" | Read [workflows/white-space.md](workflows/white-space.md) |
 | "enrich", "pipeline", "target list" | See [references/REFERENCE.md#pipeline-operations](references/REFERENCE.md#pipeline-operations) |
 
 ## Quick Reference
