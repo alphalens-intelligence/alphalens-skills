@@ -18,7 +18,6 @@ Use this when the user asks for a quick competitive landscape or "market map" an
 ```bash
 WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
 
 # Fire org-level similarity + all secondary anchors simultaneously
 curl -s -H "API-Key: $KEY" "$API/api/v1/search/organizations/{anchor_id}/similar?limit=50&is_headquarters=true" > $WORKDIR/r_anchor.json &

@@ -36,7 +36,6 @@ If `ts_count` is 0, the company has no headcount history — swap it for one tha
 ```bash
 WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
 
 # Growth metrics for anchor + all peers
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{anchor_id}/growth-metrics" > $WORKDIR/gm_anchor.json &

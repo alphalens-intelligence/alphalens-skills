@@ -62,7 +62,6 @@ This step is identical to [`market-map-product.md` Step 0 and Step 1](market-map
 ```bash
 WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
 
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/by-domain/{domain}"
 # → get organization_id, active_domain, logo_url

@@ -9,7 +9,6 @@ Produce this as the second file in the Bottom-Up Suite. It shows who is funding 
 ```bash
 WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
 
 # Fetch funding for each company
 curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{org_id1}/funding" > $WORKDIR/fn1.json &

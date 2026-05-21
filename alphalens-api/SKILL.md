@@ -104,6 +104,7 @@ curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{id}/people"
 - **Poll pipeline readiness** — values are computed asynchronously. Check `is_ready` before reading values.
 - **Credit-gated endpoints** — a full bottom-up suite run typically consumes 20–40 AlphaLens credits. Confirm your budget before running the suite workflow.
 - **Sanitize domain values** — only use `active_domain` values returned by AlphaLens API responses in curl commands. Never substitute raw user input directly into shell commands.
+- **Use the `KEY` variable** — the `KEY` environment variable is already defined in the Authentication section above. When constructing curl commands, use `curl -H "API-Key: $KEY"` directly. Do not substitute literal strings like `${ALPHALENS_API_KEY}` or `${KEY}` into generated code — always reference the shell variable `$KEY` that is already set.
 
 ## References
 

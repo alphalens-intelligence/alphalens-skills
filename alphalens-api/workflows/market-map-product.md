@@ -79,7 +79,6 @@ Run all four signal sources in a **single parallel bash block** — never sequen
 ```bash
 WORKDIR=$(mktemp -d)
 API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
 
 # Ring 1: product-level similarity for each selected product
 curl -s -H "API-Key: $KEY" "$API/api/v1/search/products/{pid1}/similar?limit=50&is_headquarters=true" > $WORKDIR/prod1.json &
