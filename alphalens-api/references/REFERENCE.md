@@ -4,10 +4,9 @@
 
 ```bash
 API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
 ```
 
-Send `API-Key: $KEY` on all requests.
+Send `API-Key: $KEY` on all requests. The `KEY` variable is already defined in SKILL.md.
 
 ## Base URLs
 

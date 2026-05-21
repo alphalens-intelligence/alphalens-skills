@@ -28,10 +28,9 @@ metadata:
 
 ```bash
 API="https://api-production.alphalens.ai"
-KEY="${ALPHALENS_API_KEY}"
 ```
 
-Send `API-Key: $KEY` on all requests.
+Send `API-Key: $KEY` on all requests. The `KEY` variable holds your AlphaLens API key and is injected by the agent runtime — do not hardcode or substitute it.
 
 ## What This Skill Produces
 
