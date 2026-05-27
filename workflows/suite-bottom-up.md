@@ -4,6 +4,8 @@ When a user asks for a "bottom-up mapping", "bottom-up analysis", "deep dive", o
 
 **Prerequisite:** You should only be here if the Mapping Workflow Selection section in SKILL.md routed you to the bottom-up path. If the user asked for a simple "market map", use `workflows/market-map-org.md` instead.
 
+> **Data disclosure:** This orchestrator workflow delegates to market-map-product, investor-network, and peer-benchmark workflows. Each sends organization/product IDs to the AlphaLens API and fetches favicons from Google's public service. Confirm with the user before running the full suite on more than 20 organizations.
+
 ## Critical: Bottom-up mapping always uses product-centric maps
 
 The market map component must be **product-centric** (one tab per qualifying product). This means:

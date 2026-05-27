@@ -6,6 +6,8 @@ It produces **one market map per qualifying product** on a single tabbed HTML pa
 
 **Always run Step 0 first.** A raw product array almost always contains delivery channels and feature clusters masquerading as products. Mapping them wastes effort and produces noise.
 
+> **Data disclosure:** This workflow sends organization IDs and product IDs to the AlphaLens API and fetches favicons from Google's public service. Confirm with the user before running enrichment on more than 20 organizations.
+
 ---
 
 ## Step 0 — Score and select real products (run before anything else)
@@ -136,9 +138,9 @@ Sort ascending by `product_similar_cosine_distance`. Skip result #0 (always self
 
 ---
 
-## Step 3 — Supplement with own knowledge (same as org-level workflow)
+## Step 3 — Supplement with own knowledge (provenance-labeled)
 
-After the product similarity fan-out, add companies you know should be there. Check each via `by-domain`, mark pending/failed appropriately.
+After the product similarity fan-out, add companies you know should be there. Check each via `by-domain`, mark with `.agent-knowledge` styling (not `.pending` — that class is for AlphaLens indexing states). Always label agent-sourced companies distinctly so viewers can tell what came from AlphaLens vs. the agent's own knowledge.
 
 ---
 

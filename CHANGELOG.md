@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.1] — 2025-05-27
+
+### Security improvements (addressing ClawHub audit)
+
+- **OpenClaw install path corrected**: README OpenClaw install command now uses `WalidMustapha/alphalens-api` (verified publisher handle).
+- **Provenance labeling**: Workflows now explicitly label companies sourced from the agent's own knowledge vs. AlphaLens with `.agent-knowledge` class (distinct from `.pending` for AlphaLens indexing states).
+- **User data disclosure**: All workflow files now include a data disclosure note listing the external services contacted (AlphaLens API, Google favicon service).
+
 ## [2.0.0] — 2025-05-27
 
 ### Changed

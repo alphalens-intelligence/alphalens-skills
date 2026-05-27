@@ -2,6 +2,8 @@
 
 **Purpose:** Break the anchor's products into component features and test which feature combinations have competitive coverage. This reveals which features are **table stakes** (everyone has them, required to compete) vs. **differentiators** (few survive without them, creates leverage).
 
+> **Data disclosure:** This workflow sends product feature descriptions to the AlphaLens `search-products` API.
+
 ---
 
 ## Step 3a — Feature Decomposition

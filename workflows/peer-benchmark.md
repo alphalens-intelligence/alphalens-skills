@@ -2,6 +2,8 @@
 
 Produce this as the third file in the Bottom-Up Suite. It gives a side-by-side picture of the anchor company against its closest peers: headcount trajectory, funding scale, capital efficiency, and qualitative positioning.
 
+> **Data disclosure:** This workflow sends organization IDs to the AlphaLens API and fetches favicons from Google's public service.
+
 ---
 
 ## Step 1 — Identify 5 peers by size similarity

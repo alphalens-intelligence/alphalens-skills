@@ -2,6 +2,8 @@
 
 Produce this as the second file in the Bottom-Up Suite. It shows who is funding the landscape and where capital is concentrated or absent.
 
+> **Data disclosure:** This workflow sends organization IDs to the AlphaLens API and fetches favicons from Google's public service. Confirm with the user before running enrichment on more than 20 organizations.
+
 ---
 
 ## Step 1 — Fetch funding data and favicons for all indexed companies in parallel

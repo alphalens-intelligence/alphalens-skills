@@ -45,7 +45,7 @@ git clone https://github.com/alphalens-intelligence/alphalens-skills \
 ### OpenClaw
 
 ```bash
-openclaw skills install alphalens-intelligence/alphalens-api
+openclaw skills install WalidMustapha/alphalens-api
 ```
 
 Set `ALPHALENS_API_KEY` in your OpenClaw secret store; the runtime injects it into the execution environment automatically.

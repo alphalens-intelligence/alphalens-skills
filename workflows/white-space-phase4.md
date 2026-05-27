@@ -2,6 +2,8 @@
 
 **Purpose:** Test whether the anchor's core product mechanics represent white space in adjacent industries. Strip the industry jargon, keep the mechanics, and query against a different ICP.
 
+> **Data disclosure:** This workflow sends organization/product IDs and feature descriptions to the AlphaLens API.
+
 ---
 
 ## Step 4a — ICP Extraction

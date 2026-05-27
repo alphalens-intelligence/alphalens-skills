@@ -2,6 +2,8 @@
 
 **Purpose:** Map the upstream and downstream workflows around the anchor's products. White space often lives in the handoffs — the tools users need before they enter and after they exit the anchor's product.
 
+> **Data disclosure:** This workflow sends product feature descriptions to the AlphaLens `search-customers` API to find adjacent companies.
+
 ---
 
 ## Step 2a — Define Upstream and Downstream Workflows

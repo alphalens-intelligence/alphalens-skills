@@ -2,6 +2,8 @@
 
 **Purpose:** Establish the red ocean. Map how the market currently perceives the anchor's products by running product-level similarity searches and analyzing competitive density.
 
+> **Data disclosure:** This workflow sends organization/product IDs to the AlphaLens API and fetches favicons from Google's public service.
+
 ---
 
 ## Step 1a — Parallel 4-ring fan-out for each product
@@ -48,19 +50,19 @@ wait
 
 ---
 
-## Step 1b — Supplement with own knowledge
+## Step 1b — Supplement with own knowledge (provenance-labeled)
 
 After the AlphaLens fan-out, apply your own knowledge of the space to identify companies that *should* appear in the saturation map but weren't returned. For each one:
 
 1. **Check AlphaLens** via `GET /api/v1/entities/organizations/by-domain/{domain}`.
-   - If the response is empty, the lookup itself triggers indexing — include the company with `.pending` styling.
+   - If the response is empty, the lookup itself triggers indexing — include the company with `.agent-knowledge` styling (distinct from `.pending` which means indexing in progress).
    - Check `venture_organization_index_status`: `indexed` | `indexing` | `indexing_failed`.
-   - If `indexing_failed`, include with `.pending` styling.
+   - If `indexing_failed`, include with `.agent-knowledge` styling.
    - If `indexed`, include at full opacity.
 
 2. Fetch its favicon in the same parallel block as other favicons.
 
-> This step is critical for white space analysis: if you know of a company that *should* be in a crowded cluster but AlphaLens doesn't return it, that affects your saturation classification. A cluster that looks sparse in AlphaLens may actually be dense when supplemented with your knowledge.
+> **Provenance notice:** Companies added in this step come from the agent's own knowledge, not from AlphaLens. Always use `.agent-knowledge` styling (e.g., dashed border, italic label) so output viewers can distinguish AlphaLens-sourced data from agent-sourced additions. This step is critical for white space analysis: if you know of a company that *should* be in a crowded cluster but AlphaLens doesn't return it, that affects your saturation classification. A cluster that looks sparse in AlphaLens may actually be dense when supplemented with your knowledge.
 
 ---
 

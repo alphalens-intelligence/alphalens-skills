@@ -2,6 +2,8 @@
 
 Use this when the user asks for a quick competitive landscape or "market map" and has NOT requested a bottom-up analysis. This is simpler and faster than the product-centric approach — it produces a single-page cluster grid based on organization-level similarity.
 
+> **Data disclosure:** This workflow sends organization IDs and domains to the AlphaLens API and fetches favicons from Google's public service. Confirm with the user before running enrichment on more than 20 organizations.
+
 ---
 
 ## Step 1 — Resolve the anchor company

@@ -6,6 +6,8 @@ Use this when the user asks to find market white space, identify untapped positi
 
 **Prerequisite:** This workflow requires a domain as input. Unlike market map workflows that produce competitive landscapes of *existing* players, white space analysis produces a structured assessment of *absence* — where competition is thin, fragmented, or non-existent.
 
+> **Data disclosure:** This orchestrator delegates to 4 phase workflows (saturation map, adjacency gap radar, feature survival matrix, ICP expansion grid). Each phase sends organization/product IDs and feature descriptions to the AlphaLens API. Confirm with the user before running on more than 20 organizations.
+
 ---
 
 ## What This Workflow Produces
