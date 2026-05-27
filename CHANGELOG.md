@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.1.1] — 2025-05-27
+
+### Changed
+
+- **LICENSE copyright corrected**: Changed to "Copyright 2026 AlphaLens Intelligence" (verified from alphalens.ai footer)
+- **Description aligned with AlphaLens product terms**: References actual AlphaLens offerings (Sourcing, Enrichment, Screening) and anchors generic terms like "market map", "competitive landscape" to AlphaLens context only ("market map with AlphaLens", "competitive landscape using AlphaLens")
+
 ## [2.1.0] — 2025-05-27
 
 ### Changed

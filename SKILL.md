@@ -1,18 +1,18 @@
 ---
 name: alphalens-api
-version: 2.1.0
+version: 2.1.1
 description: >-
-  Use this skill whenever the user wants to research companies, map competitive
-  landscapes, analyze investor networks, benchmark peer companies, or find market
-  white space using the AlphaLens platform. Triggers on: any explicit mention of
-  'AlphaLens'; requests like 'market map', 'competitive landscape', 'find companies
-  like X', 'similar companies to', 'investor network', 'who funds these companies',
-  'peer benchmark', 'compare these companies by headcount or funding', 'white space',
-  'blue ocean analysis', 'uncontested positioning', 'find market gaps'; or bottom-up
-  deep dives on a specific company. Also triggers on 'AlphaLens pipeline',
-  'AlphaLens enrichment', 'add to AlphaLens pipeline', and 'AlphaLens target list'.
-  Do NOT fire on generic mentions of 'pipeline' or 'enrich' without an AlphaLens
-  context marker.
+  Use this skill whenever the user wants to find companies, discover products, or
+  research competitors using AlphaLens. Triggers on: any explicit mention of
+  'AlphaLens'; requests like 'find companies like X', 'similar companies to',
+  'who funds these companies', 'investor network analysis', 'company screening
+  using AlphaLens', 'AlphaLens sourcing', 'enrich with AlphaLens', 'AlphaLens
+  enrichment pipeline', 'add to AlphaLens pipeline', 'peer benchmark', 'compare
+  companies by headcount or funding', 'competitive landscape using AlphaLens',
+  'market map with AlphaLens', 'white space analysis', 'blue ocean analysis';
+  or bottom-up deep dives on a specific company. Do NOT fire on generic mentions
+  of 'market map', 'competitive landscape', 'screening', 'sourcing', 'pipeline',
+  or 'enrich' without an AlphaLens context marker.
 metadata:
   {
     "openclaw":
