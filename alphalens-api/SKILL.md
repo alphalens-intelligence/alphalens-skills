@@ -1,5 +1,6 @@
 ---
 name: alphalens-api
+version: 1.1.0
 description: >-
   Use this skill whenever the user wants to discover companies, search for products,
   build market maps, manage pipelines, or run enrichment workflows using AlphaLens.
@@ -24,13 +25,20 @@ metadata:
 
 **Note:** This skill requires an active [AlphaLens subscription](https://alphalens.ai) with API access.
 
-## Authentication
+## Authentication — run this FIRST in every session
+
+The skill expects `ALPHALENS_API_KEY` to be available as an environment variable. Before any API call, alias it as `KEY` and set the API base URL:
 
 ```bash
+KEY="$ALPHALENS_API_KEY"
 API="https://api-production.alphalens.ai"
 ```
 
-Send `API-Key: $KEY` on all requests. The `KEY` variable holds your AlphaLens API key and is injected by the agent runtime — do not hardcode or substitute it.
+All curl commands in this skill and its workflows reference `$KEY` and `$API`. The aliasing above is **required as the first bash command of any session that uses this skill** — skipping it will cause every request to send an empty `API-Key:` header and return 401.
+
+If `$ALPHALENS_API_KEY` is unset, halt and ask the user to set it. Do not proceed with empty credentials.
+
+Send `API-Key: $KEY` on all requests. Never substitute literal strings like `${ALPHALENS_API_KEY}` directly into generated code — always reference the `$KEY` shell variable.
 
 ## What This Skill Produces
 
@@ -103,7 +111,8 @@ curl -s -H "API-Key: $KEY" "$API/api/v1/entities/organizations/{id}/people"
 - **Poll pipeline readiness** — values are computed asynchronously. Check `is_ready` before reading values.
 - **Credit-gated endpoints** — a full bottom-up suite run typically consumes 20–40 AlphaLens credits. Confirm your budget before running the suite workflow.
 - **Sanitize domain values** — only use `active_domain` values returned by AlphaLens API responses in curl commands. Never substitute raw user input directly into shell commands.
-- **Use the `KEY` variable** — the `KEY` environment variable is already defined in the Authentication section above. When constructing curl commands, use `curl -H "API-Key: $KEY"` directly. Do not substitute literal strings like `${ALPHALENS_API_KEY}` or `${KEY}` into generated code — always reference the shell variable `$KEY` that is already set.
+- **Alias the API key first** — `KEY="$ALPHALENS_API_KEY"` before any curl call. If `$ALPHALENS_API_KEY` is empty, halt and ask the user.
+- **Use the `$KEY` variable** — When constructing curl commands, use `curl -H "API-Key: $KEY"` directly. Do not substitute literal strings like `${ALPHALENS_API_KEY}` into generated code — always reference the `$KEY` shell variable that was aliased in the Authentication step.
 
 ## References
 
