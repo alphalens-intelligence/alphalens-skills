@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.1.0] — 2025-05-27
+
+### Changed
+
+- **Description tightened**: Anchored generic standalone triggers to AlphaLens context:
+  - `'pipeline'` → `'AlphaLens pipeline'`, `'add to AlphaLens pipeline'`, `'AlphaLens target list'`
+  - `'enrich'` → `'AlphaLens enrichment'`
+  - Removed standalone `'product search'` and `'company enrichment'` triggers
+- **Softened "any AlphaLens mention" language**: Now says "any explicit mention of 'AlphaLens'" instead of "any mention... even casually"
+- Version bumped to 2.1.0
+
 ## [2.0.1] — 2025-05-27
 
 ### Security improvements (addressing ClawHub audit)
